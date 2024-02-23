@@ -1,6 +1,6 @@
 const express = require('express');
 const { Pool } = require('pg');
-const serverless = require('serverless-http');
+
 const app = express();
 const cors = require("cors");
 const path = require("path");
