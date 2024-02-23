@@ -82,10 +82,10 @@ app.get('/', async (req, res) => {
 
 app.use('/api', save_user_login);
 
-// app.listen(port, () => {
-//   console.log(`Server is running on port ${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 
 
-module.exports.handler = serverless(app);
+//module.exports.handler = serverless(app);
