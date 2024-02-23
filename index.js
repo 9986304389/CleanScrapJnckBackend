@@ -1,5 +1,4 @@
 const express = require('express');
-const { Pool } = require('pg');
 const serverless = require('serverless-http');
 const app = express();
 const cors = require("cors");
@@ -61,15 +60,6 @@ app.use(
   express.urlencoded({ extended: true, limit: "20mb", parameterLimit: "5000" })
 );
 
-app.get('/test', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM user_login');
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error executing SQL query', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
 app.get('/', async (req, res) => {
   try {
 
