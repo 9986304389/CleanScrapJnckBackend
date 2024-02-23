@@ -9,17 +9,17 @@ const helmet = require("helmet");
 const { getClient } = require("./helperfun/postgresdatabase");
 
 
-async function main() {
-  try {
-    const client = await getClient();
-    console.log("Connected to the database");
+// async function main() {
+//   try {
+//     const client = await getClient();
+//     console.log("Connected to the database");
 
-  } catch (error) {
-    console.error("Error connecting to the database:", error);
-  }
-}
+//   } catch (error) {
+//     console.error("Error connecting to the database:", error);
+//   }
+// }
 
-main();
+// main();
 
 const corsOptions = {
   origin: '*',
@@ -59,6 +59,7 @@ app.use(express.json({ limit: "20mb" }));
 app.use(
   express.urlencoded({ extended: true, limit: "20mb", parameterLimit: "5000" })
 );
+
 
 app.get('/', async (req, res) => {
   try {
