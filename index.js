@@ -104,7 +104,7 @@ main();
 
 //app.use('/api', save_user_login)
 // Routes
-app.use("/home", home);
+app.use("/api", home);
 
 // connection
 const port = process.env.PORT || 9001;
