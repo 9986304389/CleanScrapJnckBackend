@@ -4,7 +4,7 @@
   "description": "��#\u0000 \u0000C\u0000H\u0000B\u0000A\u0000C\u0000K\u0000E\u0000N\u0000D\u0000\r\u0000 \u0000",
   "main": "index.js",
   "engines": {
-    "node": "18.x"
+    "node": "14.x"
   },
   "scripts": {
     "start": "node index.js",
