@@ -83,7 +83,7 @@
 
 // Import packages
 const express = require("express");
-const home = require("./router/home");
+const routers = require("./router/routers");
 const { getClient } = require("./helperfun/postgresdatabase");
 // Middlewares
 const app = express();
@@ -104,7 +104,7 @@ main();
 
 //app.use('/api', save_user_login)
 // Routes
-app.use("/", home);
+app.use("/api", routers);
 
 // connection
 const port = process.env.PORT || 9001;
