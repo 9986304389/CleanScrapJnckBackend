@@ -4,7 +4,7 @@
 // const cors = require("cors");
 // const path = require("path");
 // const port = 3001;
-// const save_user_login = require('./router/user_login_router');
+const save_user_login = require('./router/user_login_router');
 // const helmet = require("helmet");
 // const { getClient } = require("./helperfun/postgresdatabase");
 
@@ -84,11 +84,25 @@
 // Import packages
 const express = require("express");
 const home = require("./router/home");
-
+const { getClient } = require("./helperfun/postgresdatabase");
 // Middlewares
 const app = express();
 app.use(express.json());
 
+
+async function main() {
+  try {
+    const client = await getClient();
+    console.log("Connected to the database");
+
+  } catch (error) {
+    console.error("Error connecting to the database:", error);
+  }
+}
+
+main();
+
+app.use('/api', save_user_login)
 // Routes
 app.use("/home", home);
 
