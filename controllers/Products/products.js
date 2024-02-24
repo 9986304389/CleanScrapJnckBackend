@@ -130,3 +130,80 @@ exports.getallProducts = async (req, res, next) => {
         }
     }
 };
+
+//get the products on the cart based on the user
+exports.getProductsByUser = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["customer_id"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+        let { customer_id } = userInput;
+
+        client = await getClient();
+        const existingRecordQuery = 'SELECT * FROM cart_items WHERE customer_id = $1';
+        const existingRecordValues = [customer_id];
+        const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
+        if (existingRecord.rows.length != 0) {
+            return APIRes.getFinalResponse(true, `Successfully received product details.`, existingRecord.rows, res);
+        } else {
+            return APIRes.getFinalResponse(false, `Cart Product's are empty`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+exports.removeCartProducts = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["customer_id"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+        let { customer_id } = userInput;
+
+        client = await getClient();
+        const existingRecordQuery = 'SELECT * FROM cart_items WHERE customer_id = $1';
+        const existingRecordValues = [customer_id];
+        const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
+        if (existingRecord.rows.length === 0) {
+            return APIRes.getFinalResponse(false, `Cart Products are empty`, [], res);
+        } else {
+            // Delete records for the given customer_id
+            const deleteQuery = 'DELETE FROM cart_items WHERE customer_id = $1';
+            await client.query(deleteQuery, existingRecordValues);
+
+            return APIRes.getFinalResponse(true, `Successfully deleted cart items for customer ID ${customer_id}`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
