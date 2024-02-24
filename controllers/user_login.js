@@ -20,7 +20,7 @@ exports.usersiginup = async (req, res, next) => {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { name, email, phonenumber, password } = userInput;
+        let { name, email, phonenumber, password,shipping_address,billing_address,created_at} = userInput;
 
         if (!validateEmail(email) || !validatePhoneNumber(phonenumber)) {
             return APIRes.getFinalResponse(false, `Email or Phone Number is invalid`, [], res);
@@ -30,12 +30,12 @@ exports.usersiginup = async (req, res, next) => {
 
         const existingRecordQuery = 'SELECT * FROM userdetails WHERE phonenumber = $1';
         const existingRecordValues = [phonenumber];
-        console.log(existingRecordQuery)
+
         const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
-        console.log(existingRecord)
+
         if (existingRecord.rows.length === 0) {
-            const insertQuery = 'INSERT INTO userdetails(name, email, phonenumber, password,usertype) VALUES ($1, $2, $3, $4,$5) RETURNING *';
-            const insertValues = [name, email, phonenumber, password, '0'];
+            const insertQuery = 'INSERT INTO userdetails(name, email, phonenumber, password,usertype,shipping_address,billing_address,created_at) VALUES ($1, $2, $3, $4,$5,$6,$7,$8) RETURNING *';
+            const insertValues = [name, email, phonenumber, password, '0',shipping_address , billing_address,created_at];
             const result = await client.query(insertQuery, insertValues);
 
             if (result) {
