@@ -64,38 +64,38 @@ exports.authenticateUser = async (req, res, next) => {
     }
 };
 
-exports.get_all_users_profiles = async (req, res, next) => {
-    let client;
-    let errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        throw errors.array();
-    }
+// exports.get_all_users_profiles = async (req, res, next) => {
+//     let client;
+//     let errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//         throw errors.array();
+//     }
 
-    client = await getClient();
-    try {
-        const result = await client.query(
-            `SELECT  empcode, name, username, email, phonenumber FROM user_details_hdr`,
-        );
+//     client = await getClient();
+//     try {
+//         const result = await client.query(
+//             `SELECT  empcode, name, username, email, phonenumber FROM user_details_hdr`,
+//         );
 
-        if (result.rows.length === 0) {
-            // User not found
-            return APIRes.getFinalResponse(false, 'Invalid employee', [], res);
-        }
+//         if (result.rows.length === 0) {
+//             // User not found
+//             return APIRes.getFinalResponse(false, 'Invalid employee', [], res);
+//         }
 
-        return APIRes.getFinalResponse(true, 'get employees successful', [result.rows], res);
+//         return APIRes.getFinalResponse(true, 'get employees successful', [result.rows], res);
 
-    } catch (error) {
-        // Handle database query errors
-        console.error(error);
-        return APIRes.getFinalResponse(false, 'Internal server error', [], res);
-    }
-    finally {
-        // Close the client connection
-        if (client) {
-            await client.end();
-        }
-    }
-};
+//     } catch (error) {
+//         // Handle database query errors
+//         console.error(error);
+//         return APIRes.getFinalResponse(false, 'Internal server error', [], res);
+//     }
+//     finally {
+//         // Close the client connection
+//         if (client) {
+//             await client.end();
+//         }
+//     }
+// };
 
 
 
