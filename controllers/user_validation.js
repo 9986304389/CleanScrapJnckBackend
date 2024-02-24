@@ -8,7 +8,7 @@ const saltRounds = 10;
 const { getClient } = require("../helperfun/postgresdatabase");
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto'); // Importing crypto module
-const secretKey = crypto.randomBytes(32).toString('base64');
+const {secretKey} = require('../helperfun/jwtconfig');
 
 exports.authenticateUser = async (req, res, next) => {
     let client;
