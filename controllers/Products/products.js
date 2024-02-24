@@ -116,10 +116,7 @@ exports.getallProducts = async (req, res, next) => {
         const existingRecord = await client.query(existingRecordQuery);
 
         if (existingRecord.rows.length != 0) {
-
-            if (result) {
-                return APIRes.getFinalResponse(true, `Successfully received product details.`, existingRecord.rows, res);
-            }
+            return APIRes.getFinalResponse(true, `Successfully received product details.`, existingRecord.rows, res);
         } else {
             return APIRes.getFinalResponse(false, `No Product's`, [], res);
         }
