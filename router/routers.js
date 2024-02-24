@@ -8,6 +8,8 @@ const router = express.Router();
 router.post('/usersiginup', user_login.usersiginup);
 router.post('/login', user_validation.authenticateUser);
 router.post('/addProduct', product.Addproducts);
+router.post('/Editproducts',product.Editproducts);
+
 router.get('/gettoken', getToken.token);
 router.get("/", async (req, res, next) => {
   return res.status(200).json({
