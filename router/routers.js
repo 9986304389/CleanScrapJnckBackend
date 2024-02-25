@@ -9,7 +9,8 @@ const router = express.Router();
 
 router.post('/usersiginup', user_login.usersiginup);
 router.post('/login', user_validation.authenticateUser);
-
+router.get('/getOTP', user_validation.otpGeneate);
+router.get('/verifyOTP', user_validation.verifyOTP);
 // Middleware function to check for JWT token in the Authorization header
 const checkToken = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
@@ -35,7 +36,8 @@ router.post('/Editproducts', product.Editproducts);
 router.get("/getAllProducts", checkToken, product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
 router.get('/gettoken', getToken.token);
-router.post('/addProductstoCartByUser', product.addProductstoCartByUser)
+
+router.post('/addProductstoCartByUser', product.addProductstoCartByUser);
 router.delete('/removeCartProductByUser', product.removeCartProducts);
 router.get("/", async (req, res, next) => {
   return res.status(200).json({
