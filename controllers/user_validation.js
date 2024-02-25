@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const { secretKey } = require('../helperfun/jwtconfig');
 const otpGenerator = require('otp-generator');
 const moment = require('moment');
-
+const axios = require('axios');
 
 exports.authenticateUser = async (req, res, next) => {
     let client;
@@ -99,10 +99,12 @@ exports.otpGeneate = async (req, res, next) => {
             const values = [otp, expirationTime, phonenumber];
             const result = await client.query(query, values);
         }
-
-        // Passwords match, authentication successful
-        return APIRes.getFinalResponse(true, 'Authentication successful', [{ OTP: otp, expirationTime: expirationTime }], res);
-
+        const sendSMS = await SendSMSToUser(otp, expirationTime, phonenumber);
+        console.log(sendSMS)
+        if (sendSMS) {
+            // Passwords match, authentication successful
+            return APIRes.getFinalResponse(true, 'Get OTP successfully', [], res);
+        }
     } catch (error) {
         // Handle database query errors
         console.error(error);
@@ -177,3 +179,34 @@ exports.verifyOTP = async (req, res, next,) => {
 
 
 
+const SendSMSToUser = async (otp, expirationTime, phonenumber) => {
+    const apiUrl = 'https://bulksmsapi.vispl.in/';
+    const username = 'NaviaTrn1';
+    const password = 'NaviaTrn1@123';
+    const messageType = 'text';
+    const mobile = phonenumber;
+    const senderId = 'TRADES';
+    const ContentID = '1707168751856183385';
+    const EntityID = '1701158079989448514';
+    //  const message = `${otp} this OTP to login your cleanscrapjunk account.it will expir in 1 min DO NOT share this code with anyone`;
+    const message = 'Dear Customer, To download the Handytrader app , click on the below link Google Play store- {#var#} Apple store - {#var#} By Tradeplus Team';
+    const params = {
+        username,
+        password,
+        messageType,
+        mobile,
+        senderId,
+        ContentID,
+        EntityID,
+        message: message
+    };
+
+    try {
+        const response = await axios.get(apiUrl, { params });
+        console.log('SMS sent successfully:', response.data);
+        return true;
+    } catch (error) {
+        console.error('Error sending SMS:', error);
+        return false;
+    }
+}
