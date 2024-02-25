@@ -154,7 +154,9 @@ exports.verifyOTP = async (req, res, next,) => {
         // Check if the provided OTP matches the generated OTP
         if (otp === result.rows[0].otp) {
             // Check if the OTP is still valid
-            if (moment().isBefore(expirationTime)) {
+            const currentTime = moment();
+
+            if (moment(expirationTime).isAfter(currentTime)) {
                 console.log('OTP is valid.');
                 return APIRes.getFinalResponse(true, `OTP is valid.`, [], res);
 
