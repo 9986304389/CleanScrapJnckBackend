@@ -35,6 +35,7 @@ router.post('/Editproducts', product.Editproducts);
 router.get("/getAllProducts", checkToken, product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
 router.get('/gettoken', getToken.token);
+router.post('/addProductstoCartByUser', product.addProductstoCartByUser)
 router.delete('/removeCartProductByUser', product.removeCartProducts);
 router.get("/", async (req, res, next) => {
   return res.status(200).json({

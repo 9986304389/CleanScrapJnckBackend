@@ -131,6 +131,59 @@ exports.getallProducts = async (req, res, next) => {
     }
 };
 
+//Add the cart products
+exports.addProductstoCartByUser = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["customer_id", "product_id", "quantity", "image_url", "price", "product_code"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+
+        let { customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code } = userInput;
+
+        created_at = new Date();
+        updated_at = new Date();
+        client = await getClient();
+
+        const existingRecordQuery = 'SELECT * FROM cart_items WHERE customer_id = $1 and product_code=$2';
+        const existingRecordValues = [customer_id, product_code];
+
+        const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
+
+        if (existingRecord.rows.length === 0) {
+            const query = `
+                            INSERT INTO cart_items ( customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code)
+                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8)
+                            RETURNING *;
+                            `;
+            const values = [customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code];
+            const result = await client.query(query, values);
+
+            if (result) {
+                return APIRes.getFinalResponse(true, `Product add cart successfully.`, [], res);
+            }
+        } else {
+            return APIRes.getFinalResponse(false, `Product already exists`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
 //get the products on the cart based on the user
 exports.getProductsByUser = async (req, res, next) => {
     let client;
@@ -182,7 +235,7 @@ exports.removeCartProducts = async (req, res, next) => {
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
-        let { customer_id } = userInput;
+        let { customer_id, product_code } = userInput;
 
         client = await getClient();
         const existingRecordQuery = 'SELECT * FROM cart_items WHERE customer_id = $1';
@@ -192,7 +245,8 @@ exports.removeCartProducts = async (req, res, next) => {
             return APIRes.getFinalResponse(false, `Cart Products are empty`, [], res);
         } else {
             // Delete records for the given customer_id
-            const deleteQuery = 'DELETE FROM cart_items WHERE customer_id = $1';
+            const deleteQuery = 'DELETE FROM cart_items WHERE customer_id = $1 and product_code=$2';
+            const existingRecordValues = [customer_id, product_code]
             await client.query(deleteQuery, existingRecordValues);
 
             return APIRes.getFinalResponse(true, `Successfully deleted cart items for customer ID ${customer_id}`, [], res);
