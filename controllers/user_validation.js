@@ -150,6 +150,7 @@ exports.verifyOTP = async (req, res, next,) => {
         }
         let expirationTime = result.rows[0].expirationtime;
 
+        console.log(expirationTime)
         // Check if the provided OTP matches the generated OTP
         if (otp === result.rows[0].otp) {
             // Check if the OTP is still valid
