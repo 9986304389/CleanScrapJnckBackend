@@ -170,7 +170,7 @@ exports.verifyOTP = async (req, res, next,) => {
         }
 
     } catch (error) {
-        console.error('Error:', error);
+        //console.error('Error:', error);
         return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
     } finally {
         // Close the client connection
@@ -179,7 +179,6 @@ exports.verifyOTP = async (req, res, next,) => {
         }
     }
 };
-
 
 
 const SendSMSToUser = async (otp, expirationTime, phonenumber) => {

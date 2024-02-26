@@ -2,7 +2,6 @@ const httpStatus = require("http-status");
 module.exports = {
 
 	getMessageResult: function (response, msg, res) {
-
 		// if (response?.length === 1) {
 		// 	const data = Object.assign({}, ...response);
 		// 	res.status(httpStatus.OK).json({ "status": true, result: data, message: msg });
@@ -10,7 +9,6 @@ module.exports = {
 		// else {
 			res.status(httpStatus.OK).json({ "status": true, result: response, message: msg });
 		//}
-
 	},
 
 	getFinalResponse: function (status, message, result, res) {

@@ -33,10 +33,9 @@ const checkToken = (req, res, next) => {
 
 router.post('/addProduct', product.Addproducts);
 router.post('/Editproducts', product.Editproducts);
-router.get("/getAllProducts", checkToken, product.getallProducts);
+router.get("/getAllProducts", product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
 router.get('/gettoken', getToken.token);
-
 router.post('/addProductstoCartByUser', product.addProductstoCartByUser);
 router.delete('/removeCartProductByUser', product.removeCartProducts);
 router.get("/", async (req, res, next) => {
