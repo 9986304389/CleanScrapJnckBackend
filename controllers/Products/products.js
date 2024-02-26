@@ -3,7 +3,9 @@ const validateUserInput = require('../../helperfun/validateUserInput');
 const APIRes = require('../../helperfun/result');
 const { validationResult } = require("express-validator");
 const { getClient } = require("../../helperfun/postgresdatabase");
-
+const sharp = require('sharp');
+const path = require('path');
+const imagePath = path.resolve(__dirname, '../../images/flw.jpg');
 exports.Addproducts = async (req, res, next) => {
     let client;
     try {
@@ -13,7 +15,7 @@ exports.Addproducts = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["product_code", "name", "description", "price", "quantity_available", "category_id", "image_url"];
+        const requiredFields = ["product_code", "name", "description", "price", "quantity_available", "category_id"];
         const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
@@ -21,6 +23,7 @@ exports.Addproducts = async (req, res, next) => {
 
         let { product_code, name, description, price, quantity_available, category_id, image_url } = userInput;
 
+        image_url = imagePath;
 
         client = await getClient();
 
@@ -54,6 +57,7 @@ exports.Addproducts = async (req, res, next) => {
         }
     }
 };
+
 
 exports.Editproducts = async (req, res, next) => {
     let client;
