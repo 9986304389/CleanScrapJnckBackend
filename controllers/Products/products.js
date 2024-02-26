@@ -113,11 +113,16 @@ exports.Editproducts = async (req, res, next) => {
 exports.getallProducts = async (req, res, next) => {
     let client;
     try {
-
+        const userInput = Utils.getReqValues(req);
+        const { product_code } = userInput;
         client = await getClient();
-        const existingRecordQuery = 'SELECT * FROM products';
+        let query = 'SELECT * FROM products';
 
-        const existingRecord = await client.query(existingRecordQuery);
+        if (product_code) {
+            query = query + ` WHERE product_code = '${product_code}'`; // Ensure proper spacing and quoting for the condition
+        }
+        
+        const existingRecord = await client.query(query);
 
         if (existingRecord.rows.length != 0) {
             return APIRes.getFinalResponse(true, `Successfully received product details.`, existingRecord.rows, res);
