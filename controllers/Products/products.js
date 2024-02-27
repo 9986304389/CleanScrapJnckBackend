@@ -319,7 +319,7 @@ exports.AddressAddAndEdit = async (req, res, next) => {
                     return APIRes.getFinalResponse(false, `Address with ID ${address_id} not found.`, [], res);
                 }
             }
-            else{
+            else {
                 return APIRes.getFinalResponse(false, `Address with ID ${address_id} not found.`, [], res);
             }
         } else {
@@ -354,6 +354,48 @@ exports.AddressAddAndEdit = async (req, res, next) => {
                     return APIRes.getFinalResponse(true, `Address added successfully.`, result.rows, res);
                 }
             }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+
+exports.removeAddress = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["address_id"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+        let { customer_id, address_id } = userInput;
+
+        client = await getClient();
+        const existingRecordQuery = 'SELECT * FROM addresses WHERE address_id = $1';
+        const existingRecordValues = [address_id];
+        const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
+        if (existingRecord.rows.length === 0) {
+            return APIRes.getFinalResponse(false, `No address empty`, [], res);
+        } else {
+            // Delete records for the given customer_id
+            const deleteQuery = 'DELETE FROM addresses WHERE address_id = $1 and customer_id=$2';
+            const existingRecordValues = [address_id, customer_id]
+            await client.query(deleteQuery, existingRecordValues);
+
+            return APIRes.getFinalResponse(true, `Successfully deleted address for ${address_id}`, [], res);
         }
     } catch (error) {
         console.error('Error:', error);

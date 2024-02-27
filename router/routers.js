@@ -39,6 +39,7 @@ router.get('/gettoken', getToken.token);
 router.post('/addProductstoCartByUser', product.addProductstoCartByUser);
 router.delete('/removeCartProductByUser', product.removeCartProducts);
 router.post('/AddressAddAndEdit',product.AddressAddAndEdit);
+router.delete('/removeAddress', product.removeAddress);
 router.get("/", async (req, res, next) => {
   return res.status(200).json({
     title: "Express Testing",
