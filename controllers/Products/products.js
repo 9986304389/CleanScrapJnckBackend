@@ -5,7 +5,7 @@ const { validationResult } = require("express-validator");
 const { getClient } = require("../../helperfun/postgresdatabase");
 const sharp = require('sharp');
 const path = require('path');
-const imagePath = path.resolve(__dirname, '../../images/flw.jpg');
+
 exports.Addproducts = async (req, res, next) => {
     let client;
     try {
@@ -23,7 +23,7 @@ exports.Addproducts = async (req, res, next) => {
 
         let { product_code, name, description, price, quantity_available, category_id, image_url } = userInput;
 
-        image_url = imagePath;
+        //image_url = `${process.env.DOMAIN + image_url}`;
 
         client = await getClient();
 
@@ -121,7 +121,7 @@ exports.getallProducts = async (req, res, next) => {
         if (product_code) {
             query = query + ` WHERE product_code = '${product_code}'`; // Ensure proper spacing and quoting for the condition
         }
-        
+
         const existingRecord = await client.query(query);
 
         if (existingRecord.rows.length != 0) {
@@ -259,6 +259,101 @@ exports.removeCartProducts = async (req, res, next) => {
             await client.query(deleteQuery, existingRecordValues);
 
             return APIRes.getFinalResponse(true, `Successfully deleted cart items for customer ID ${customer_id}`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+exports.AddressAddAndEdit = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["name", "customer_id", "address_line1", "address_line2", "city", "state", "postal_code"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+
+        let { address_id, customer_id, address_line1, address_line2, city, state, postal_code, country, name } = userInput;
+
+        client = await getClient();
+
+        if (address_id) {
+
+            // If address_id is not provided, it's an add operation
+            const checkAddressQuery = `
+               SELECT * FROM addresses
+               WHERE customer_id = $1
+               AND address_id = $2;
+           `;
+
+            const checkAddressValues = [customer_id, address_id];
+            const addressExists = await client.query(checkAddressQuery, checkAddressValues);
+
+            if (addressExists.rows.length > 0) {
+                // If address_id is provided, it's an edit operation
+                const updateQuery = `
+                UPDATE addresses
+                SET customer_id = $1, address_line1 = $2, address_line2 = $3, city = $4, state = $5, postal_code = $6, country = $7, name = $8
+                WHERE address_id = $9
+                RETURNING *;
+            `;
+                const updateValues = [customer_id, address_line1, address_line2, city, state, postal_code, country, name, address_id];
+                const result = await client.query(updateQuery, updateValues);
+
+                if (result.rows.length > 0) {
+                    return APIRes.getFinalResponse(true, `Address updated successfully.`, result.rows, res);
+                } else {
+                    return APIRes.getFinalResponse(false, `Address with ID ${address_id} not found.`, [], res);
+                }
+            }
+            else{
+                return APIRes.getFinalResponse(false, `Address with ID ${address_id} not found.`, [], res);
+            }
+        } else {
+            // If address_id is not provided, it's an add operation
+            const checkAddressQuery = `
+                SELECT * FROM addresses
+                WHERE customer_id = $1
+                AND address_line1 = $2
+                AND address_line2 = $3
+                AND city = $4
+                AND state = $5
+                AND postal_code = $6
+                AND country = $7
+                AND name = $8;
+            `;
+
+            const checkAddressValues = [customer_id, address_line1, address_line2, city, state, postal_code, country, name];
+            const addressExists = await client.query(checkAddressQuery, checkAddressValues);
+
+            if (addressExists.rows.length > 0) {
+                return APIRes.getFinalResponse(false, `Address already exists for the customer.`, [], res);
+            } else {
+                const insertQuery = `
+                    INSERT INTO addresses (customer_id, address_line1, address_line2, city, state, postal_code, country, name)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                    RETURNING *;
+                `;
+                const insertValues = [customer_id, address_line1, address_line2, city, state, postal_code, country, name];
+                const result = await client.query(insertQuery, insertValues);
+
+                if (result.rows.length > 0) {
+                    return APIRes.getFinalResponse(true, `Address added successfully.`, result.rows, res);
+                }
+            }
         }
     } catch (error) {
         console.error('Error:', error);
