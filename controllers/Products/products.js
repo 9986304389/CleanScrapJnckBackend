@@ -407,3 +407,94 @@ exports.removeAddress = async (req, res, next) => {
         }
     }
 };
+
+//We buy products 
+exports.WeBuyProducts = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["product_name", "description", "price", "quantity_available", "image_url", "product_code", "type"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+
+        let { webyproducts_id, product_name, description, price, quantity_available, category_id, created_at,updated_at, image_url, product_code, type } = userInput;
+
+        client = await getClient();
+
+        if (webyproducts_id) {
+
+            // If address_id is not provided, it's an add operation
+            const checkAddressQuery = `
+               SELECT * FROM webyproducts
+               WHERE webyproducts_id = $1`;
+
+            const checkAddressValues = [webyproducts_id];
+            const addressExists = await client.query(checkAddressQuery, checkAddressValues);
+
+            if (addressExists.rows.length > 0) {
+                // If address_id is provided, it's an edit operation
+                const updateQuery = `
+                UPDATE webyproducts
+                SET product_name = $1, description = $2, price = $3, quantity_available = $4, category_id = $5, created_at = $6, updated_at = $7, image_url = $8,product_code=$9,type=$10
+                WHERE webyproducts_id = '${webyproducts_id}'
+                RETURNING *;
+            `;
+                const updateValues = [product_name, description, price, quantity_available, category_id, addressExists.rows[0].created_at, new Date(),image_url, product_code, type];
+                const result = await client.query(updateQuery, updateValues);
+
+                if (result.rows.length > 0) {
+                    return APIRes.getFinalResponse(true, `Prodct updated successfully.`, result.rows, res);
+                } else {
+                    return APIRes.getFinalResponse(false, `Products with ID ${webyproducts_id} not found.`, [], res);
+                }
+            }
+            else {
+                return APIRes.getFinalResponse(false, `Products with ID ${webyproducts_id} not found.`, [], res);
+            }
+        } else {
+            // If address_id is not provided, it's an add operation
+            const checkAddressQuery = `
+                SELECT * FROM webyproducts
+                WHERE webyproducts_id = $1
+                AND product_name = $2
+                AND description = $3
+                AND product_code = $4
+                AND type = $5
+            `;
+
+            const checkAddressValues = [webyproducts_id, product_name, description, product_code, type];
+            const webuyproductExists = await client.query(checkAddressQuery, checkAddressValues);
+
+            if (webuyproductExists.rows.length > 0) {
+                return APIRes.getFinalResponse(false, `Product already exists.`, [], res);
+            } else {
+                const insertQuery = `
+                    INSERT INTO webyproducts (product_name, description, price, quantity_available, category_id, created_at,updated_at, image_url, product_code, type)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10)
+                    RETURNING *;
+                `;
+                const insertValues = [product_name, description, price, quantity_available, category_id, new Date(), new Date(), image_url, product_code, type];
+                const result = await client.query(insertQuery, insertValues);
+
+                if (result.rows.length > 0) {
+                    return APIRes.getFinalResponse(true, `Product added successfully.`, result.rows, res);
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};

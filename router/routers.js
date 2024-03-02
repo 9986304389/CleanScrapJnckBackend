@@ -33,13 +33,17 @@ const checkToken = (req, res, next) => {
 
 router.post('/addProduct', product.Addproducts);
 router.post('/Editproducts', product.Editproducts);
+router.post('/addProductstoCartByUser', product.addProductstoCartByUser);
+router.post('/AddressAddAndEdit',product.AddressAddAndEdit);
+router.post('/weBuyProductAddAndEdit',product.WeBuyProducts);
+
 router.get("/getAllProducts", product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
 router.get('/gettoken', getToken.token);
-router.post('/addProductstoCartByUser', product.addProductstoCartByUser);
+
 router.delete('/removeCartProductByUser', product.removeCartProducts);
-router.post('/AddressAddAndEdit',product.AddressAddAndEdit);
 router.delete('/removeAddress', product.removeAddress);
+
 router.get("/", async (req, res, next) => {
   return res.status(200).json({
     title: "Express Testing",
