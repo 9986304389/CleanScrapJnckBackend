@@ -570,13 +570,13 @@ exports.placeorder = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["customer_id", "status", "total_amount", "product_code"];
+        const requiredFields = ["customer_id", "status", "total_amount", "product_code","payment_method"];
         const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { customer_id, order_date, status, total_amount, created_at, updated_at, product_code, image_url } = userInput;
+        let { customer_id, order_date, status, total_amount, created_at, updated_at, product_code, image_url,payment_method } = userInput;
 
 
         client = await getClient();
@@ -596,6 +596,16 @@ exports.placeorder = async (req, res, next) => {
                             `;
             const values = [customer_id, new Date(), status, total_amount, new Date(), new Date(), image_url, product_code];
             const result = await client.query(query, values);
+            const orderId = result.rows[0].order_id;
+
+            // Insert payment
+            const paymentQuery = `
+                INSERT INTO payments (order_id, amount, payment_date, payment_method, status, created_at, updated_at)
+                VALUES ($1, $2, $3, $4, $5, $6, $7);
+            `;
+            const paymentValues = [orderId, total_amount, new Date(), payment_method, "success", new Date(), new Date()];
+            await client.query(paymentQuery, paymentValues);
+
 
             if (result) {
                 return APIRes.getFinalResponse(true, `Order placed successfully.`, [], res);
