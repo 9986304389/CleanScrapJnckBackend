@@ -40,6 +40,7 @@ router.post('/weBuyProductAddAndEdit',product.WeBuyProducts);
 router.get("/getAllProducts", product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
 router.get('/gettoken', getToken.token);
+router.get('/getAddressByUser', product.getAddressByUser);
 
 router.delete('/removeCartProductByUser', product.removeCartProducts);
 router.delete('/removeAddress', product.removeAddress);

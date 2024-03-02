@@ -408,6 +408,43 @@ exports.removeAddress = async (req, res, next) => {
     }
 };
 
+exports.getAddressByUser = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["customer_id"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+        let { customer_id } = userInput;
+
+        client = await getClient();
+        const existingRecordQuery = 'SELECT * FROM addresses WHERE customer_id = $1';
+        const existingRecordValues = [customer_id];
+        const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
+        if (existingRecord.rows.length === 0) {
+            return APIRes.getFinalResponse(false, `No address empty`, [], res);
+        } else {
+           
+            return APIRes.getFinalResponse(true, `Successfully get address`, existingRecord.rows, res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
 //We buy products 
 exports.WeBuyProducts = async (req, res, next) => {
     let client;
@@ -424,7 +461,7 @@ exports.WeBuyProducts = async (req, res, next) => {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { webyproducts_id, product_name, description, price, quantity_available, category_id, created_at,updated_at, image_url, product_code, type } = userInput;
+        let { webyproducts_id, product_name, description, price, quantity_available, category_id, created_at, updated_at, image_url, product_code, type } = userInput;
 
         client = await getClient();
 
@@ -446,7 +483,7 @@ exports.WeBuyProducts = async (req, res, next) => {
                 WHERE webyproducts_id = '${webyproducts_id}'
                 RETURNING *;
             `;
-                const updateValues = [product_name, description, price, quantity_available, category_id, addressExists.rows[0].created_at, new Date(),image_url, product_code, type];
+                const updateValues = [product_name, description, price, quantity_available, category_id, addressExists.rows[0].created_at, new Date(), image_url, product_code, type];
                 const result = await client.query(updateQuery, updateValues);
 
                 if (result.rows.length > 0) {
