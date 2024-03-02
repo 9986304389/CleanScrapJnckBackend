@@ -559,3 +559,110 @@ exports.getAllWeBuyProducts = async (req, res, next) => {
         }
     }
 };
+
+//Place order
+exports.placeorder = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["customer_id", "status", "total_amount", "product_code"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+
+        let { customer_id, order_date, status, total_amount, created_at, updated_at, product_code, image_url } = userInput;
+
+
+        client = await getClient();
+
+        const query_getproduct = `select * from products
+        where product_code='${product_code}'`;
+
+        const result_product = await client.query(query_getproduct);
+
+        if (result_product.rows.length != 0) {
+
+            image_url = result_product.rows[0].image_url;
+            console.log(customer_id.length)
+            const query = `INSERT INTO orders (customer_id, order_date, status, total_amount, created_at, updated_at, img_url, product_code)
+                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8)
+                            RETURNING *;
+                            `;
+            const values = [customer_id, new Date(), status, total_amount, new Date(), new Date(), image_url, product_code];
+            const result = await client.query(query, values);
+
+            if (result) {
+                return APIRes.getFinalResponse(true, `Order placed successfully.`, [], res);
+            }
+        }
+        else {
+            return APIRes.getFinalResponse(false, `No Product exit`, [], res);
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+// Update order status
+exports.updateOrderStatus = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["order_id", "status"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+
+        let { order_id, status } = userInput;
+
+        client = await getClient();
+
+        // Check if the order exists
+        const checkOrderQuery = `SELECT * FROM orders WHERE order_id = $1`;
+        const checkOrderValues = [order_id];
+        const orderExists = await client.query(checkOrderQuery, checkOrderValues);
+
+        if (orderExists.rows.length === 0) {
+            return APIRes.getFinalResponse(false, `Order with ID ${order_id} does not exist.`, [], res);
+        }
+
+        // Update the order status
+        const updateStatusQuery = `UPDATE orders SET status = $1 WHERE order_id = $2`;
+        const updateStatusValues = [status, order_id];
+        const result = await client.query(updateStatusQuery, updateStatusValues);
+
+        if (result.rowCount > 0) {
+            return APIRes.getFinalResponse(true, `Order status updated successfully.`, [], res);
+        } else {
+            return APIRes.getFinalResponse(false, `Failed to update order status.`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
