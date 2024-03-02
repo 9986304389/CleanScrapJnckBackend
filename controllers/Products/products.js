@@ -666,3 +666,47 @@ exports.updateOrderStatus = async (req, res, next) => {
     }
 };
 
+// Get orders by status
+exports.getOrdersByStatus = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["customer_id", "status"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+        const { status, customer_id } = userInput;
+
+        client = await getClient();
+
+        // Query to get orders by status
+        const query = `
+            SELECT * FROM orders
+            WHERE status = $1 and customer_id=$2;
+        `;
+        const values = [status, customer_id];
+        const result = await client.query(query, values);
+
+        if (result.rows.length > 0) {
+            return APIRes.getFinalResponse(true, `Orders with status ${status} retrieved successfully.`, result.rows, res);
+        } else {
+            return APIRes.getFinalResponse(false, `No orders found with status ${status}.`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+

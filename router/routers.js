@@ -37,7 +37,8 @@ router.post('/addProductstoCartByUser', product.addProductstoCartByUser);
 router.post('/AddressAddAndEdit',product.AddressAddAndEdit);
 router.post('/weBuyProductAddAndEdit',product.WeBuyProducts);
 router.post('/placeorder',product.placeorder)
-router.post('/updateOrderStatus',product.updateOrderStatus)
+router.post('/updateOrderStatus',product.updateOrderStatus);
+router.post('/getOrdersByStatus',product.getOrdersByStatus);
 
 router.get("/getAllProducts", product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
