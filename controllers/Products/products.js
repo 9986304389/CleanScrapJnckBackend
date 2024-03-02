@@ -431,7 +431,7 @@ exports.getAddressByUser = async (req, res, next) => {
         if (existingRecord.rows.length === 0) {
             return APIRes.getFinalResponse(false, `No address empty`, [], res);
         } else {
-           
+
             return APIRes.getFinalResponse(true, `Successfully get address`, existingRecord.rows, res);
         }
     } catch (error) {
@@ -524,6 +524,30 @@ exports.WeBuyProducts = async (req, res, next) => {
                     return APIRes.getFinalResponse(true, `Product added successfully.`, result.rows, res);
                 }
             }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+exports.getAllWeBuyProducts = async (req, res, next) => {
+    let client;
+    try {
+
+        client = await getClient();
+        const existingRecordQuery = 'SELECT * FROM webyproducts';
+        const existingRecord = await client.query(existingRecordQuery);
+        if (existingRecord.rows.length === 0) {
+            return APIRes.getFinalResponse(false, `No Products`, [], res);
+        } else {
+
+            return APIRes.getFinalResponse(true, `Successfully get products`, existingRecord.rows, res);
         }
     } catch (error) {
         console.error('Error:', error);
