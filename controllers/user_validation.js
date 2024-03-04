@@ -118,7 +118,7 @@ const generateOTPWithExpiration = async () => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Calculate expiration time
-    const expirationTime = moment().add(1, 'minutes').tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');;
+    const expirationTime = moment().add(2, 'minutes').tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');;
 
     return { otp, expirationTime };
 }
@@ -190,7 +190,7 @@ const SendSMSToUser = async (otp, expirationTime, phonenumber) => {
     const senderId = 'TRADES';
     const ContentID = '1707168751856183385';
     const EntityID = '1701158079989448514';
-    //  const message = `${otp} this OTP to login your cleanscrapjunk account.it will expir in 1 min DO NOT share this code with anyone`;
+    //const message = `${otp} this OTP to login your cleanscrapjunk account.it will expir in 2 min DO NOT share this code with anyone`;
     const message = 'Dear Customer, To download the Handytrader app , click on the below link Google Play store- {#var#} Apple store - {#var#} By Tradeplus Team';
     const params = {
         username,
@@ -212,3 +212,6 @@ const SendSMSToUser = async (otp, expirationTime, phonenumber) => {
         return false;
     }
 }
+
+
+//Password alogrithm

@@ -13,7 +13,7 @@ exports.token = async (req, res, next) => {
         const userId = 'guest'; // Example: You might generate a guest user ID
         const username = 'guest';
         // Generate JWT token
-        const token = jwt.sign({ id: userId, username: username }, secretKey, { expiresIn: '7d' });
+        const token = jwt.sign({ id: userId, username: username }, secretKey, { expiresIn: '24h' });
 
         if (token) {
             return APIRes.getFinalResponse(true, `Get the token successfully.`, { token: token }, res);
