@@ -118,7 +118,7 @@ const generateOTPWithExpiration = async () => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Calculate expiration time
-    const expirationTime = moment().add(1, 'minutes').tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');;
+    const expirationTime = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');;
 
     return { otp, expirationTime };
 }
