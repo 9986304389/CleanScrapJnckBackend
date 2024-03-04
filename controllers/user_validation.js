@@ -7,7 +7,7 @@ const { getClient } = require("../helperfun/postgresdatabase");
 const jwt = require('jsonwebtoken');
 const { secretKey } = require('../helperfun/jwtconfig');
 const otpGenerator = require('otp-generator');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const axios = require('axios');
 
 exports.authenticateUser = async (req, res, next) => {
@@ -118,7 +118,7 @@ const generateOTPWithExpiration = async () => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Calculate expiration time
-    const expirationTime = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');
+    const expirationTime = moment().add(1, 'minutes').tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');;
 
     return { otp, expirationTime };
 }
@@ -154,7 +154,7 @@ exports.verifyOTP = async (req, res, next,) => {
         // Check if the provided OTP matches the generated OTP
         if (otp === result.rows[0].otp) {
             // Check if the OTP is still valid
-            const currentTime = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');
+            const currentTime = moment();
 
             if (moment(expirationTime).isAfter(currentTime)) {
                 console.log('OTP is valid.');
