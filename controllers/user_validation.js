@@ -118,7 +118,7 @@ const generateOTPWithExpiration = async () => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Calculate expiration time
-    const expirationTime = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');;
+    const expirationTime = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');
 
     return { otp, expirationTime };
 }
@@ -154,7 +154,7 @@ exports.verifyOTP = async (req, res, next,) => {
         // Check if the provided OTP matches the generated OTP
         if (otp === result.rows[0].otp) {
             // Check if the OTP is still valid
-            const currentTime = moment();
+            const currentTime = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');
 
             if (moment(expirationTime).isAfter(currentTime)) {
                 console.log('OTP is valid.');
