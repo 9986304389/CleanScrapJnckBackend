@@ -35,7 +35,7 @@ exports.usersiginup = async (req, res, next) => {
 
         if (existingRecord.rows.length === 0) {
             const insertQuery = 'INSERT INTO userdetails(name, email, phonenumber, password,usertype,shipping_address,billing_address,created_at) VALUES ($1, $2, $3, $4,$5,$6,$7,$8) RETURNING *';
-            const insertValues = [name, email, phonenumber, password, '0',shipping_address , billing_address,created_at];
+            const insertValues = [name, email, phonenumber, password, '0',shipping_address , billing_address,moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS')];
             const result = await client.query(insertQuery, insertValues);
 
             if (result) {

@@ -82,9 +82,9 @@ exports.otpGeneate = async (req, res, next) => {
     try {
         let { otp, expirationTime } = await generateOTPWithExpiration();
         console.log('OTP:', otp);
-        console.log('Expiration Time:', expirationTime.format('YYYY-MM-DD HH:mm:ss'));
+        console.log('Expiration Time:', expirationTime);
 
-        expirationTime = expirationTime.format('YYYY-MM-DD HH:mm:ss');
+        expirationTime = expirationTime;
         const existingRecordQuery = 'SELECT * FROM userdetails WHERE phonenumber = $1';
         const existingRecordValues = [phonenumber];
 
@@ -118,7 +118,7 @@ const generateOTPWithExpiration = async () => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Calculate expiration time
-    const expirationTime = moment().add(1, 'minutes');
+    const expirationTime = moment().add(1, 'minutes').tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');;
 
     return { otp, expirationTime };
 }
