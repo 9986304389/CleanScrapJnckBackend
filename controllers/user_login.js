@@ -4,7 +4,7 @@ const validateUserInput = require('../helperfun/validateUserInput');
 const APIRes = require('../helperfun/result');
 const { validationResult } = require("express-validator");
 const { getClient } = require("../helperfun/postgresdatabase");
-
+const moment = require('moment-timezone');
 exports.usersiginup = async (req, res, next) => {
     let client;
     try {
