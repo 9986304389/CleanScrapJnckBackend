@@ -5,9 +5,11 @@ const { validationResult } = require("express-validator");
 const { getClient } = require("../../helperfun/postgresdatabase");
 const sharp = require('sharp');
 const path = require('path');
+const moment = require('moment-timezone');
 
 exports.Addproducts = async (req, res, next) => {
     let client;
+
     try {
         let errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -34,11 +36,11 @@ exports.Addproducts = async (req, res, next) => {
 
         if (existingRecord.rows.length === 0) {
             const query = `
-                            INSERT INTO products (product_code,name, description, price, quantity_available, category_id, image_url)
-                            VALUES ($1, $2, $3, $4, $5, $6,$7)
+                            INSERT INTO products (product_code,name, description, price, quantity_available, category_id, image_url,created_at)
+                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8)
                             RETURNING *;
                             `;
-            const values = [product_code, name, description, price, quantity_available, category_id, image_url];
+            const values = [product_code, name, description, price, quantity_available, category_id, image_url,moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS')];
             const result = await client.query(query, values);
 
             if (result) {
@@ -87,10 +89,10 @@ exports.Editproducts = async (req, res, next) => {
         if (existingRecord.rows.length > 0) {
             const query = `
             UPDATE products
-            SET name = $1, description = $2, price = $3, quantity_available = $4, category_id = $5, image_url = $6, updated_at = NOW()
+            SET name = $1, description = $2, price = $3, quantity_available = $4, category_id = $5, image_url = $6, updated_at = $8
             WHERE product_code = $7
             RETURNING *`;
-            const values = [name, description, price, quantity_available, category_id, image_url, product_code];
+            const values = [name, description, price, quantity_available, category_id, image_url, product_code,moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS')];
             const result = await client.query(query, values);
 
             if (result) {
@@ -158,8 +160,8 @@ exports.addProductstoCartByUser = async (req, res, next) => {
 
         let { customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code } = userInput;
 
-        created_at = new Date();
-        updated_at = new Date();
+        created_at = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');
+        updated_at = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');
         client = await getClient();
 
         const existingRecordQuery = 'SELECT * FROM cart_items WHERE customer_id = $1 and product_code=$2';
@@ -483,7 +485,7 @@ exports.WeBuyProducts = async (req, res, next) => {
                 WHERE webyproducts_id = '${webyproducts_id}'
                 RETURNING *;
             `;
-                const updateValues = [product_name, description, price, quantity_available, category_id, addressExists.rows[0].created_at, new Date(), image_url, product_code, type];
+                const updateValues = [product_name, description, price, quantity_available, category_id, addressExists.rows[0].created_at, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), image_url, product_code, type];
                 const result = await client.query(updateQuery, updateValues);
 
                 if (result.rows.length > 0) {
@@ -517,7 +519,7 @@ exports.WeBuyProducts = async (req, res, next) => {
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10)
                     RETURNING *;
                 `;
-                const insertValues = [product_name, description, price, quantity_available, category_id, new Date(), new Date(), image_url, product_code, type];
+                const insertValues = [product_name, description, price, quantity_available, category_id, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), image_url, product_code, type];
                 const result = await client.query(insertQuery, insertValues);
 
                 if (result.rows.length > 0) {
@@ -570,13 +572,13 @@ exports.placeorder = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["customer_id", "status", "total_amount", "product_code","payment_method"];
+        const requiredFields = ["customer_id", "status", "total_amount", "product_code", "payment_method"];
         const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { customer_id, order_date, status, total_amount, created_at, updated_at, product_code, image_url,payment_method } = userInput;
+        let { customer_id, order_date, status, total_amount, created_at, updated_at, product_code, image_url, payment_method } = userInput;
 
 
         client = await getClient();
@@ -594,7 +596,7 @@ exports.placeorder = async (req, res, next) => {
                             VALUES ($1, $2, $3, $4, $5, $6,$7,$8)
                             RETURNING *;
                             `;
-            const values = [customer_id, new Date(), status, total_amount, new Date(), new Date(), image_url, product_code];
+            const values = [customer_id, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), status, total_amount, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), image_url, product_code];
             const result = await client.query(query, values);
             const orderId = result.rows[0].order_id;
 
@@ -603,7 +605,7 @@ exports.placeorder = async (req, res, next) => {
                 INSERT INTO payments (order_id, amount, payment_date, payment_method, status, created_at, updated_at)
                 VALUES ($1, $2, $3, $4, $5, $6, $7);
             `;
-            const paymentValues = [orderId, total_amount, new Date(), payment_method, "success", new Date(), new Date()];
+            const paymentValues = [orderId, total_amount, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), payment_method, "success", moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS')];
             await client.query(paymentQuery, paymentValues);
 
 
