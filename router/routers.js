@@ -34,17 +34,18 @@ const checkToken = (req, res, next) => {
 router.post('/addProduct', product.Addproducts);
 router.post('/Editproducts', product.Editproducts);
 router.post('/addProductstoCartByUser', product.addProductstoCartByUser);
-router.post('/AddressAddAndEdit',product.AddressAddAndEdit);
-router.post('/weBuyProductAddAndEdit',product.WeBuyProducts);
-router.post('/placeorder',product.placeorder)
-router.post('/updateOrderStatus',product.updateOrderStatus);
-router.post('/getOrdersByStatus',product.getOrdersByStatus);
+router.post('/editCartProducts', product.editCartProducts);
+router.post('/AddressAddAndEdit', product.AddressAddAndEdit);
+router.post('/weBuyProductAddAndEdit', product.WeBuyProducts);
+router.post('/placeorder', product.placeorder)
+router.post('/updateOrderStatus', product.updateOrderStatus);
+router.post('/getOrdersByStatus', product.getOrdersByStatus);
 
-router.get("/getAllProducts", checkToken,product.getallProducts);
+router.get("/getAllProducts", checkToken, product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
 router.get('/gettoken', getToken.token);
 router.get('/getAddressByUser', product.getAddressByUser);
-router.get('/getAllWeBuyProducts',product.getAllWeBuyProducts)
+router.get('/getAllWeBuyProducts', product.getAllWeBuyProducts)
 
 router.delete('/removeCartProductByUser', product.removeCartProducts);
 router.delete('/removeAddress', product.removeAddress);
