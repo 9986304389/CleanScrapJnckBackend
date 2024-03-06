@@ -21,10 +21,18 @@ exports.usersiginup = async (req, res, next) => {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
+    
         let { name, email, phonenumber, password, shipping_address, billing_address, created_at } = userInput;
 
+          //Email and phonenumber check     
         if (!validateEmail(email) || !validatePhoneNumber(phonenumber)) {
             return APIRes.getFinalResponse(false, `Email or Phone Number is invalid`, [], res);
+        }
+
+        const checkpassword=checkPasswordStrength(password)
+        //Password check
+        if(checkpassword!=true){
+            return APIRes.getFinalResponse(false,checkpassword, [], res);
         }
 
         client = await getClient();
@@ -67,6 +75,35 @@ const validatePhoneNumber = (phoneNumber) => {
     const phoneRegex = /^\d{10}$/;
     return phoneRegex.test(phoneNumber);
 };
+
+
+function checkPasswordStrength(password) {
+    const lowercaseRegex = /[a-z]/;
+    const uppercaseRegex = /[A-Z]/;
+    const numericRegex = /[0-9]/;
+    const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+
+    if (password.length < 8) {
+        return "Password must be at least 8 characters long";
+    }
+    if (!lowercaseRegex.test(password)) {
+        return "Password must contain at least one lowercase letter";
+    }
+    if (!uppercaseRegex.test(password)) {
+        return "Password must contain at least one uppercase letter";
+    }
+    if (!numericRegex.test(password)) {
+        return "Password must contain at least one numeric digit";
+    }
+    if (!specialCharRegex.test(password)) {
+        return "Password must contain at least one special character";
+    }
+
+    return true;
+}
+
+
+
 
 
 // exports.editUserProfile = async (req, res, next) => {
