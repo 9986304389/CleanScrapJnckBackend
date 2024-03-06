@@ -116,12 +116,15 @@ exports.getallProducts = async (req, res, next) => {
     let client;
     try {
         const userInput = Utils.getReqValues(req);
-        const { product_code } = userInput;
+        const { product_code, Active_Status } = userInput;
         client = await getClient();
-        let query = `SELECT * FROM products where product_status='0'`;
+        let query = `SELECT * FROM products WHERE 1=1`
 
         if (product_code) {
             query = query + ` and product_code = '${product_code}'`; // Ensure proper spacing and quoting for the condition
+        }
+        if (Active_Status) {
+            query = query + ` and product_status = '${Active_Status}'`
         }
 
         const existingRecord = await client.query(query);
