@@ -41,7 +41,7 @@ router.post('/placeorder', product.placeorder)
 router.post('/updateOrderStatus', product.updateOrderStatus);
 router.post('/getOrdersByStatus', product.getOrdersByStatus);
 
-router.get("/getAllProducts", product.getallProducts);
+router.get("/getAllProducts", checkToken,product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
 router.get('/gettoken', getToken.token);
 router.get('/getAddressByUser', product.getAddressByUser);

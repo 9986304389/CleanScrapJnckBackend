@@ -43,8 +43,9 @@ exports.authenticateUser = async (req, res, next) => {
 
         // Compare the entered password with the password from the database
         if (password === result_password && phoneNumber == phoneNumber) {
+
             // Set expiration time to 7 days (604,800 seconds)
-            const token = jwt.sign({ id: phonenumber, username: password }, secretKey, { expiresIn: '7d' });
+            const token = jwt.sign({ id: phonenumber, username: password }, secretKey, { expiresIn: '24h' });
 
             // Passwords match, authentication successful
             return APIRes.getFinalResponse(true, 'Authentication successful', [{ name: name, phonenumber: phoneNumber, email: email, token: token }], res);
