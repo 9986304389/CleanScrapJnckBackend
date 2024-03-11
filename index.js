@@ -6,7 +6,7 @@ const { getClient } = require("./helperfun/postgresdatabase");
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 // Import blacklistedTokens set
-const blacklistedTokens = require('./router/routers');
+const blacklistedTokens = require('./helperfun/blacklistedTokens');
 // Middlewares
 const app = express();
 app.use(express.json());
@@ -45,6 +45,7 @@ app.post('/api/logout', (req, res) => {
 
   // Ensure blacklistedTokens is a Set and then add the tokenValue
   if (blacklistedTokens instanceof Set) {
+    console.log(tokenValue)
     blacklistedTokens.add(tokenValue);
   } else {
     console.error('blacklistedTokens is not a Set:', blacklistedTokens);

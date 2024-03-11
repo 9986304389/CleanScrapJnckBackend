@@ -9,7 +9,8 @@ const app = express();
 const cron = require('node-cron');
 const axios = require('axios');
 // Store blacklisted tokens
-let blacklistedTokens = new Set();
+const blacklistedTokens = require('../helperfun/blacklistedTokens');
+
 
 
 // Middleware function to check for JWT token in the Authorization header
@@ -40,7 +41,7 @@ const checkToken = (req, res, next) => {
 cron.schedule('0 0 * * *', async () => {
   try {
     // Make a POST request to the /logout route
-    const response = await axios.post('http://localhost:9001/logout');
+    const response = await axios.post('https://clean-scrap-jnck-backend.vercel.app/api/logout');
     console.log('Logout job ran successfully:', response.data.message);
   } catch (error) {
     console.error('Error during logout job:', error.response ? error.response.data : error.message);
@@ -49,7 +50,7 @@ cron.schedule('0 0 * * *', async () => {
   timezone: 'UTC' // Set timezone if necessary
 });
 
-module.exports =blacklistedTokens
+
 router.post('/usersiginup', user_login.usersiginup);
 router.post('/login', user_validation.authenticateUser);
 router.post('/addProduct', product.Addproducts);
