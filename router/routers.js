@@ -5,6 +5,11 @@ const user_login = require('../controllers/user_login');
 const user_validation = require('../controllers/user_validation');
 const product = require('../controllers/Products/products')
 const router = express.Router();
+const app = express();
+const cron = require('node-cron');
+const axios = require('axios');
+// Store blacklisted tokens
+let blacklistedTokens = new Set();
 
 
 // Middleware function to check for JWT token in the Authorization header
@@ -20,14 +25,31 @@ const checkToken = (req, res, next) => {
     if (err) {
       return res.status(403).json({ message: 'Failed to authenticate token' });
     }
+    // Check if token is blacklisted
+    if (blacklistedTokens.has(token)) {
+      return res.status(401).send({ auth: false, message: 'Token is blacklisted.' });
+    }
+
     // Token is valid, store decoded information in request object
     req.decoded = decoded;
     next();
   });
 };
 
+// Cron job to call the /logout route every day at midnight
+cron.schedule('0 0 * * *', async () => {
+  try {
+    // Make a POST request to the /logout route
+    const response = await axios.post('http://localhost:9001/logout');
+    console.log('Logout job ran successfully:', response.data.message);
+  } catch (error) {
+    console.error('Error during logout job:', error.response ? error.response.data : error.message);
+  }
+}, {
+  timezone: 'UTC' // Set timezone if necessary
+});
 
-
+module.exports =blacklistedTokens
 router.post('/usersiginup', user_login.usersiginup);
 router.post('/login', user_validation.authenticateUser);
 router.post('/addProduct', product.Addproducts);

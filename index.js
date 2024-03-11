@@ -5,6 +5,8 @@ const routers = require("./router/routers");
 const { getClient } = require("./helperfun/postgresdatabase");
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+// Import blacklistedTokens set
+const blacklistedTokens = require('./router/routers');
 // Middlewares
 const app = express();
 app.use(express.json());
@@ -28,6 +30,28 @@ app.use('/images', express.static('images'));
 //app.use('/api', save_user_login)
 // Routes
 app.use("/api", routers);
+
+// Route to logout (blacklist) a user
+app.post('/api/logout', (req, res) => {
+  const token = req.headers['authorization'];
+
+  if (!token) {
+    return res.status(400).send({ message: 'No token provided.' });
+  }
+
+  // Split the token string and take the second part
+  const tokenParts = token.split(' ');
+  const tokenValue = tokenParts[1];
+
+  console.log(tokenValue)
+  // Ensure blacklistedTokens is a Set and then add the tokenValue
+  if (blacklistedTokens instanceof Set) {
+    blacklistedTokens.add(tokenValue);
+  } else {
+    console.error('blacklistedTokens is not a Set:', blacklistedTokens);
+  }
+  return res.status(200).send({ message: 'Logout successful.' });
+});
 
 // connection
 const port = process.env.PORT || 9001;
