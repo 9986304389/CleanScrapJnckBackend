@@ -43,7 +43,6 @@ app.post('/api/logout', (req, res) => {
   const tokenParts = token.split(' ');
   const tokenValue = tokenParts[1];
 
-  console.log(tokenValue)
   // Ensure blacklistedTokens is a Set and then add the tokenValue
   if (blacklistedTokens instanceof Set) {
     blacklistedTokens.add(tokenValue);
