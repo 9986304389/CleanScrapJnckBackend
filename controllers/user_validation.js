@@ -9,6 +9,7 @@ const { secretKey } = require('../helperfun/jwtconfig');
 const otpGenerator = require('otp-generator');
 const moment = require('moment-timezone');
 const axios = require('axios');
+const userTokenCache=require('../helperfun/userTokenCache')
 
 exports.authenticateUser = async (req, res, next) => {
     let client;
@@ -45,7 +46,8 @@ exports.authenticateUser = async (req, res, next) => {
         if (password === result_password && phoneNumber == phoneNumber) {
 
             // Set expiration time to 7 days (604,800 seconds)
-            const token = jwt.sign({ id: phonenumber, username: password }, secretKey, { expiresIn: '24h' });
+            let token = jwt.sign({ id: phonenumber, username: password }, secretKey, { expiresIn: '24h' });
+            userTokenCache.set('userToken', token);
 
             // Passwords match, authentication successful
             return APIRes.getFinalResponse(true, 'Authentication successful', [{ name: name, phonenumber: phoneNumber, email: email, token: token }], res);
