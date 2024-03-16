@@ -26,7 +26,7 @@ async function main() {
 
 main();
 
-// app.use('/images', express.static('images'));
+app.use('/images', express.static('images'));
 //app.use('/api', save_user_login)
 // Routes
 app.use("/api", routers);

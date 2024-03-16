@@ -11,10 +11,11 @@
         {
             "src": "/(.*)",
             "dest": "/"
-        },
-        {
-            "src": "/images/(.*)",
-            "dest": "/images/$1"
         }
-    ]
+    
+    ],
+    "static": {
+        "source": "images",
+        "destination": "/images" 
+      }
 }
