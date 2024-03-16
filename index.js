@@ -5,6 +5,7 @@ const routers = require("./router/routers");
 const { getClient } = require("./helperfun/postgresdatabase");
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const path = require('path');
 // Import blacklistedTokens set
 const blacklistedTokens = require('./helperfun/blacklistedTokens');
 // Middlewares
@@ -27,7 +28,9 @@ async function main() {
 main();
 
 
-app.use('/images', express.static('images'));
+//app.use('/images', express.static('images'));
+// Serve static files from the 'images' directory
+app.use('/images', express.static(path.join(__dirname, 'images')));
 //app.use('/api', save_user_login)
 // Routes
 app.use("/api", routers);
