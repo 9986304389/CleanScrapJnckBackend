@@ -12,10 +12,6 @@
             "src": "/(.*)",
             "dest": "/"
         }
-    ],
-    "static": {
-        "source": "./images",
-        "destination": "/images"
-      }
+    ]
       
 }
