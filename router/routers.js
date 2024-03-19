@@ -9,6 +9,7 @@ const app = express();
 const cron = require('node-cron');
 const axios = require('axios');
 const userTokenCache = require('../helperfun/userTokenCache')
+const APIRes = require('../helperfun/result')
 // Store blacklisted tokens
 const blacklistedTokens = require('../helperfun/blacklistedTokens');
 
@@ -25,11 +26,13 @@ const checkToken = (req, res, next) => {
   // Verify token
   jwt.verify(token, secretKey, (err, decoded) => {
     if (err) {
-      return res.status(403).json({ message: 'Failed to authenticate token' });
+      //return res.status(403).json({ message: 'Failed to authenticate token' });
+      return APIRes.getFinalResponse(false, `Failed to authenticate token`, [], res);
     }
     // Check if token is blacklisted
     if (blacklistedTokens.has(token)) {
-      return res.status(401).send({ auth: false, message: 'Token is blacklisted.' });
+      return APIRes.getFinalResponse(false, `Token is blacklisted.`, [], res);
+      //return res.status(401).send({ auth: false, message: 'Token is blacklisted.' });
     }
 
     // Token is valid, store decoded information in request object
@@ -96,8 +99,8 @@ router.post('/updateOrderStatus', product.updateOrderStatus);
 router.post('/getOrdersByStatus', product.getOrdersByStatus);
 router.post('/editUserProfile', user_login.editUserProfile)
 
-router.get('/getOTP', checkToken,user_validation.otpGeneate);
-router.get('/verifyOTP',checkToken, user_validation.verifyOTP);
+router.get('/getOTP', checkToken, user_validation.otpGeneate);
+router.get('/verifyOTP', checkToken, user_validation.verifyOTP);
 router.get('/getprofile', user_login.getprofile);
 router.get("/getAllProducts", checkToken, product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
