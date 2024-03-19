@@ -96,7 +96,7 @@ router.post('/updateOrderStatus', product.updateOrderStatus);
 router.post('/getOrdersByStatus', product.getOrdersByStatus);
 router.post('/editUserProfile', user_login.editUserProfile)
 
-router.get('/getOTP', user_validation.otpGeneate);
+router.get('/getOTP', checkToken,user_validation.otpGeneate);
 router.get('/verifyOTP', user_validation.verifyOTP);
 router.get('/getprofile', user_login.getprofile);
 router.get("/getAllProducts", checkToken, product.getallProducts);
