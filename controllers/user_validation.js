@@ -9,7 +9,7 @@ const { secretKey } = require('../helperfun/jwtconfig');
 const otpGenerator = require('otp-generator');
 const moment = require('moment-timezone');
 const axios = require('axios');
-const userTokenCache=require('../helperfun/userTokenCache')
+const userTokenCache = require('../helperfun/userTokenCache')
 
 exports.authenticateUser = async (req, res, next) => {
     let client;
@@ -165,11 +165,11 @@ exports.verifyOTP = async (req, res, next,) => {
 
             } else {
                 console.log('OTP has expired.');
-                return APIRes.getFinalResponse(true, `OTP has expired.`, [], res);
+                return APIRes.getFinalResponse(false, `OTP has expired.`, [], res);
 
             }
         } else {
-            return APIRes.getFinalResponse(true, `Invalid OTP.`, [], res);
+            return APIRes.getFinalResponse(false, `Invalid OTP.`, [], res);
         }
 
     } catch (error) {
