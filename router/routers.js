@@ -101,7 +101,7 @@ router.post('/editUserProfile', checkToken,user_login.editUserProfile)
 
 router.get('/getOTP', checkToken, user_validation.otpGeneate);
 router.get('/verifyOTP', checkToken, user_validation.verifyOTP);
-router.get('/getprofile', user_login.getprofile);
+router.get('/getprofile', checkToken,user_login.getprofile);
 router.get("/getAllProducts", checkToken, product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
 
