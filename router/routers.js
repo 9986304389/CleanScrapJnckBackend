@@ -90,7 +90,7 @@ router.post('/usersiginup', user_login.usersiginup);
 router.post('/login', user_validation.authenticateUser);
 router.post('/addProduct', product.Addproducts);
 router.post('/Editproducts', product.Editproducts);
-router.post('/addProductstoCartByUser', product.addProductstoCartByUser);
+router.post('/addProductstoCartByUser', checkToken,product.addProductstoCartByUser);
 router.post('/editCartProducts', product.editCartProducts);
 router.post('/AddressAddAndEdit', product.AddressAddAndEdit);
 router.post('/weBuyProductAddAndEdit', product.WeBuyProducts);
