@@ -17,13 +17,13 @@ exports.Addproducts = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["product_code", "name", "description", "price", "quantity_available", "category_id"];
+        const requiredFields = ["product_code", "name", "description", "price", "quantity_available", "category_id", "type"];
         const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { product_code, name, description, price, quantity_available, category_id, image_url } = userInput;
+        let { product_code, name, description, price, quantity_available, category_id, image_url, type } = userInput;
 
         //image_url = `${process.env.DOMAIN + image_url}`;
 
@@ -36,11 +36,11 @@ exports.Addproducts = async (req, res, next) => {
 
         if (existingRecord.rows.length === 0) {
             const query = `
-                            INSERT INTO products (product_code,name, description, price, quantity_available, category_id, image_url,created_at)
-                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8)
+                            INSERT INTO products (product_code,name, description, price, quantity_available, category_id, image_url,created_at,type)
+                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8,$9)
                             RETURNING *;
                             `;
-            const values = [product_code, name, description, price, quantity_available, category_id, image_url, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS')];
+            const values = [product_code, name, description, price, quantity_available, category_id, image_url, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), type];
             const result = await client.query(query, values);
 
             if (result) {
@@ -76,7 +76,7 @@ exports.Editproducts = async (req, res, next) => {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { product_code, name, description, price, quantity_available, category_id, image_url, product_status } = userInput;
+        let { product_code, name, description, price, quantity_available, category_id, image_url, product_status, type } = userInput;
 
 
         client = await getClient();
@@ -89,10 +89,10 @@ exports.Editproducts = async (req, res, next) => {
         if (existingRecord.rows.length > 0) {
             const query = `
             UPDATE products
-            SET name = $1, description = $2, price = $3, quantity_available = $4, category_id = $5, image_url = $6, updated_at = $8,product_status=$9
+            SET name = $1, description = $2, price = $3, quantity_available = $4, category_id = $5, image_url = $6, updated_at = $8,product_status=$9,type=$10
             WHERE product_code = $7
             RETURNING *`;
-            const values = [name, description, price, quantity_available, category_id, image_url, product_code, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), product_status];
+            const values = [name, description, price, quantity_available, category_id, image_url, product_code, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), product_status, type];
             const result = await client.query(query, values);
 
             if (result) {
