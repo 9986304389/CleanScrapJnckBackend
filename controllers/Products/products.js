@@ -164,7 +164,7 @@ exports.addProductstoCartByUser = async (req, res, next) => {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code } = userInput;
+        let { customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code,name } = userInput;
 
         created_at = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');
         updated_at = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');
