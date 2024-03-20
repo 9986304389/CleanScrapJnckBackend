@@ -106,7 +106,7 @@ router.get("/getAllProducts", checkToken, product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
 
 router.get('/getAddressByUser', product.getAddressByUser);
-router.get('/getAllWeBuyProducts', product.getAllWeBuyProducts)
+router.get('/getAllWeBuyProducts',checkToken, product.getAllWeBuyProducts)
 
 router.delete('/removeCartProductByUser', product.removeCartProducts);
 router.delete('/removeAddress', product.removeAddress);
