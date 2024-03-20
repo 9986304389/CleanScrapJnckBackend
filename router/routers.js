@@ -88,16 +88,16 @@ cron.schedule('0 0 * * *', async () => {
 
 router.post('/usersiginup', user_login.usersiginup);
 router.post('/login', user_validation.authenticateUser);
-router.post('/addProduct', product.Addproducts);
-router.post('/Editproducts', product.Editproducts);
+router.post('/addProduct', checkToken,product.Addproducts);
+router.post('/Editproducts', checkToken,product.Editproducts);
 router.post('/addProductstoCartByUser', checkToken,product.addProductstoCartByUser);
-router.post('/editCartProducts', product.editCartProducts);
-router.post('/AddressAddAndEdit', product.AddressAddAndEdit);
-router.post('/weBuyProductAddAndEdit', product.WeBuyProducts);
-router.post('/placeorder', product.placeorder)
-router.post('/updateOrderStatus', product.updateOrderStatus);
-router.post('/getOrdersByStatus', product.getOrdersByStatus);
-router.post('/editUserProfile', user_login.editUserProfile)
+router.post('/editCartProducts', checkToken,product.editCartProducts);
+router.post('/AddressAddAndEdit',checkToken, product.AddressAddAndEdit);
+router.post('/weBuyProductAddAndEdit', checkToken,product.WeBuyProducts);
+router.post('/placeorder',checkToken, product.placeorder)
+router.post('/updateOrderStatus', checkToken,product.updateOrderStatus);
+router.post('/getOrdersByStatus', checkToken,product.getOrdersByStatus);
+router.post('/editUserProfile', checkToken,user_login.editUserProfile)
 
 router.get('/getOTP', checkToken, user_validation.otpGeneate);
 router.get('/verifyOTP', checkToken, user_validation.verifyOTP);
@@ -105,11 +105,11 @@ router.get('/getprofile', user_login.getprofile);
 router.get("/getAllProducts", checkToken, product.getallProducts);
 router.get("/getProductsByUser", product.getProductsByUser)
 
-router.get('/getAddressByUser', product.getAddressByUser);
+router.get('/getAddressByUser', checkToken,product.getAddressByUser);
 router.get('/getAllWeBuyProducts',checkToken, product.getAllWeBuyProducts)
 
-router.delete('/removeCartProductByUser', product.removeCartProducts);
-router.delete('/removeAddress', product.removeAddress);
+router.delete('/removeCartProductByUser', checkToken,product.removeCartProducts);
+router.delete('/removeAddress',checkToken, product.removeAddress);
 
 router.get("/", async (req, res, next) => {
   return res.status(200).json({
