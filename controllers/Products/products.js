@@ -155,7 +155,7 @@ exports.addProductstoCartByUser = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["customer_id", "product_id", "quantity", "image_url", "price", "product_code"];
+        const requiredFields = ["customer_id", "product_id", "quantity", "image_url", "price", "product_code", "name"];
         const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
@@ -174,11 +174,11 @@ exports.addProductstoCartByUser = async (req, res, next) => {
 
         if (existingRecord.rows.length === 0) {
             const query = `
-                            INSERT INTO cart_items ( customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code)
-                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8)
+                            INSERT INTO cart_items ( customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code,name)
+                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8,$9)
                             RETURNING *;
                             `;
-            const values = [customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code];
+            const values = [customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code, name];
             const result = await client.query(query, values);
 
             if (result) {
