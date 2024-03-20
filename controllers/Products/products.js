@@ -116,7 +116,7 @@ exports.getallProducts = async (req, res, next) => {
     let client;
     try {
         const userInput = Utils.getReqValues(req);
-        const { product_code, Active_Status } = userInput;
+        const { product_code, Active_Status,type } = userInput;
         client = await getClient();
         let query = `SELECT * FROM products WHERE 1=1`
 
@@ -125,6 +125,9 @@ exports.getallProducts = async (req, res, next) => {
         }
         if (Active_Status) {
             query = query + ` and product_status = '${Active_Status}'`
+        }
+        if (type) {
+            query = query + ` and type = '${type}'`
         }
 
         const existingRecord = await client.query(query);
