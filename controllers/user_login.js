@@ -136,7 +136,7 @@ exports.getprofile = async (req, res, next) => {
 
         if (existingRecord.rows.length != 0) {
 
-            return APIRes.getFinalResponse(false, `Get user info successfully`, existingRecord.rows, res);
+            return APIRes.getFinalResponse(true, `Get user info successfully`, existingRecord.rows, res);
         }
         else {
             return APIRes.getFinalResponse(false, `user not exists`, [], res);

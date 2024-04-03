@@ -98,12 +98,18 @@ router.post('/placeorder', checkToken, product.placeorder)
 router.post('/updateOrderStatus', checkToken, product.updateOrderStatus);
 router.post('/getOrdersByStatus', checkToken, product.getOrdersByStatus);
 router.post('/editUserProfile', checkToken, user_login.editUserProfile)
+router.post('/addProductsScrapMarket', product.add_products_scrap_market);
+router.post('/EditproductsScrapMarket', product.Editproducts_scrap_market);
+router.post('/addProductsPriceScrapMarket', product.add_products_price_scrap_market);
+router.post('/EditproductsPriceScrapMarket', product.Editproducts_price_scrap_market);
 
 router.get('/getOTP', checkToken, user_validation.otpGeneate);
 router.get('/verifyOTP', checkToken, user_validation.verifyOTP);
 router.get('/getprofile', checkToken, user_login.getprofile);
 router.get("/getAllProducts", checkToken, product.getallProducts);
-router.get("/getProductsByUser", product.getProductsByUser)
+router.get("/getProductsByUser", product.getProductsByUser);
+router.get("/getallScrapProducts", product.getallScrapProducts);
+router.get("/getallScrapProductsPrice", product.getallScrapProductsPrice);
 
 router.get('/getAddressByUser', checkToken, product.getAddressByUser);
 router.get('/getAllWeBuyProducts', checkToken, product.getAllWeBuyProducts)

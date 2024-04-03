@@ -60,7 +60,6 @@ exports.Addproducts = async (req, res, next) => {
     }
 };
 
-
 exports.Editproducts = async (req, res, next) => {
     let client;
     try {
@@ -116,7 +115,7 @@ exports.getallProducts = async (req, res, next) => {
     let client;
     try {
         const userInput = Utils.getReqValues(req);
-        const { product_code, Active_Status,type } = userInput;
+        const { product_code, Active_Status, type } = userInput;
         client = await getClient();
         let query = `SELECT * FROM products WHERE 1=1`
 
@@ -164,7 +163,7 @@ exports.addProductstoCartByUser = async (req, res, next) => {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code,name } = userInput;
+        let { customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code, name } = userInput;
 
         created_at = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');
         updated_at = moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS');
@@ -837,5 +836,286 @@ exports.getOrdersByStatus = async (req, res, next) => {
         }
     }
 };
+
+exports.add_products_scrap_market = async (req, res, next) => {
+    let client;
+
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["product_code", "name", "description", "price", "quantity_available", "category_id", "type", "location", "discount_price"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+
+        let { product_code, name, description, price, quantity_available, category_id, image_url, type, location, discount_price } = userInput;
+
+        //image_url = `${process.env.DOMAIN + image_url}`;
+
+        client = await getClient();
+
+        const existingRecordQuery = 'SELECT * FROM products_scrap_market WHERE product_code = $1';
+        const existingRecordValues = [product_code];
+
+        const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
+
+        if (existingRecord.rows.length === 0) {
+            const query = `
+                            INSERT INTO products_scrap_market (product_code,name, description, price, quantity_available, category_id, image_url,created_at,type,location, discount_price)
+                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8,$9,$10,$11)
+                            RETURNING *;
+                            `;
+            const values = [product_code, name, description, price, quantity_available, category_id, image_url, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), type, location, discount_price];
+            const result = await client.query(query, values);
+
+            if (result) {
+                return APIRes.getFinalResponse(true, `Product created successfully.`, [], res);
+            }
+        } else {
+            return APIRes.getFinalResponse(false, `Product already exists`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+exports.Editproducts_scrap_market = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["product_code"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+
+        let { product_code, name, description, price, quantity_available, category_id, image_url, product_status, type, location, discount_price } = userInput;
+
+
+        client = await getClient();
+
+        const existingRecordQuery = 'SELECT * FROM products_scrap_market WHERE product_code = $1';
+        const existingRecordValues = [product_code];
+
+        const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
+
+        if (existingRecord.rows.length > 0) {
+            const query = `
+            UPDATE products_scrap_market
+            SET name = $1, description = $2, price = $3, quantity_available = $4, category_id = $5, image_url = $6, updated_at = $8,product_status=$9,type=$10,location=$11,discount_price=$12
+            WHERE product_code = $7
+            RETURNING *`;
+            const values = [name, description, price, quantity_available, category_id, image_url, product_code, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), product_status, type, location, discount_price];
+            const result = await client.query(query, values);
+
+            if (result) {
+                return APIRes.getFinalResponse(true, `Edit Product created successfully.`, [], res);
+            }
+        } else {
+            return APIRes.getFinalResponse(false, `Product not exists`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+exports.getallScrapProducts = async (req, res, next) => {
+    let client;
+    try {
+        const userInput = Utils.getReqValues(req);
+        const { product_code, Active_Status, type } = userInput;
+        client = await getClient();
+        let query = `SELECT * FROM products_scrap_market WHERE 1=1`
+
+        if (product_code) {
+            query = query + ` and product_code = '${product_code}'`; // Ensure proper spacing and quoting for the condition
+        }
+        if (Active_Status) {
+            query = query + ` and product_status = '${Active_Status}'`
+        }
+        if (type) {
+            query = query + ` and type = '${type}'`
+        }
+
+        const existingRecord = await client.query(query);
+
+        if (existingRecord.rows.length != 0) {
+            return APIRes.getFinalResponse(true, `Successfully received product details.`, existingRecord.rows, res);
+        } else {
+            return APIRes.getFinalResponse(false, `No Product's`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+exports.add_products_price_scrap_market = async (req, res, next) => {
+    let client;
+
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["product_code", "name", "description", "price", "quantity_available", "category_id", "type", "location", "discount_price"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+
+        let { product_code, name, description, price, quantity_available, category_id, image_url, type, location, discount_price } = userInput;
+
+        //image_url = `${process.env.DOMAIN + image_url}`;
+
+        client = await getClient();
+
+        const existingRecordQuery = 'SELECT * FROM price_scrap_market WHERE product_code = $1';
+        const existingRecordValues = [product_code];
+
+        const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
+
+        if (existingRecord.rows.length === 0) {
+            const query = `
+                            INSERT INTO price_scrap_market (product_code,name, description, price, quantity_available, category_id, image_url,created_at,type,location, discount_price)
+                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8,$9,$10,$11)
+                            RETURNING *;
+                            `;
+            const values = [product_code, name, description, price, quantity_available, category_id, image_url, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), type, location, discount_price];
+            const result = await client.query(query, values);
+
+            if (result) {
+                return APIRes.getFinalResponse(true, `Product created successfully.`, [], res);
+            }
+        } else {
+            return APIRes.getFinalResponse(false, `Product already exists`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+exports.Editproducts_price_scrap_market = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["product_code"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+
+        let { product_code, name, description, price, quantity_available, category_id, image_url, product_status, type, location, discount_price } = userInput;
+
+
+        client = await getClient();
+
+        const existingRecordQuery = 'SELECT * FROM price_scrap_market WHERE product_code = $1';
+        const existingRecordValues = [product_code];
+
+        const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
+
+        if (existingRecord.rows.length > 0) {
+            const query = `
+            UPDATE price_scrap_market
+            SET name = $1, description = $2, price = $3, quantity_available = $4, category_id = $5, image_url = $6, updated_at = $8,product_status=$9,type=$10,location=$11,discount_price=$12
+            WHERE product_code = $7
+            RETURNING *`;
+            const values = [name, description, price, quantity_available, category_id, image_url, product_code, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), product_status, type, location, discount_price];
+            const result = await client.query(query, values);
+
+            if (result) {
+                return APIRes.getFinalResponse(true, `Edit Product created successfully.`, [], res);
+            }
+        } else {
+            return APIRes.getFinalResponse(false, `Product not exists`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+exports.getallScrapProductsPrice = async (req, res, next) => {
+    let client;
+    try {
+        const userInput = Utils.getReqValues(req);
+        const { product_code, Active_Status, type } = userInput;
+        client = await getClient();
+        let query = `SELECT * FROM price_scrap_market WHERE 1=1`
+
+        if (product_code) {
+            query = query + ` and product_code = '${product_code}'`; // Ensure proper spacing and quoting for the condition
+        }
+        if (Active_Status) {
+            query = query + ` and product_status = '${Active_Status}'`
+        }
+        if (type) {
+            query = query + ` and type = '${type}'`
+        }
+
+        const existingRecord = await client.query(query);
+
+        if (existingRecord.rows.length != 0) {
+            return APIRes.getFinalResponse(true, `Successfully received product details.`, existingRecord.rows, res);
+        } else {
+            return APIRes.getFinalResponse(false, `No Product's`, [], res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
 
 
