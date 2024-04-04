@@ -25,18 +25,19 @@ const checkToken = (req, res, next) => {
 
   // Verify token
   jwt.verify(token, secretKey, (err, decoded) => {
-    if (err) {
-      //return res.status(403).json({ message: 'Failed to authenticate token' });
-      return APIRes.getFinalResponse(false, `Failed to authenticate token`, [], res);
-    }
-    // Check if token is blacklisted
-    if (blacklistedTokens.has(token)) {
-      return APIRes.getFinalResponse(false, `Token is blacklisted.`, [], res);
-      //return res.status(401).send({ auth: false, message: 'Token is blacklisted.' });
-    }
+    // console.log(token)
+    // if (err) {
+    //   //return res.status(403).json({ message: 'Failed to authenticate token' });
+    //   return APIRes.getFinalResponse(false, `Failed to authenticate token`, [], res);
+    // }
+    // // Check if token is blacklisted
+    // if (blacklistedTokens.has(token)) {
+    //   return APIRes.getFinalResponse(false, `Token is blacklisted.`, [], res);
+    //   //return res.status(401).send({ auth: false, message: 'Token is blacklisted.' });
+    // }
 
-    // Token is valid, store decoded information in request object
-    req.decoded = decoded;
+    // // Token is valid, store decoded information in request object
+    // req.decoded = decoded;
     next();
   });
 };
@@ -94,7 +95,7 @@ router.post('/addProductstoCartByUser', checkToken, product.addProductstoCartByU
 router.post('/editCartProducts', checkToken, product.editCartProducts);
 router.post('/AddressAddAndEdit', checkToken, product.AddressAddAndEdit);
 router.post('/weBuyProductAddAndEdit', checkToken, product.WeBuyProducts);
-router.post('/placeorder', checkToken, product.placeorder)
+router.post('/placeorder', product.placeorder)
 router.post('/updateOrderStatus', checkToken, product.updateOrderStatus);
 router.post('/getOrdersByStatus', checkToken, product.getOrdersByStatus);
 router.post('/editUserProfile', checkToken, user_login.editUserProfile)
