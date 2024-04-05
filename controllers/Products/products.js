@@ -684,6 +684,7 @@ exports.getAllWeBuyProducts = async (req, res, next) => {
 // };
 
 exports.placeorder = async (req, res, next) => {
+    console.log("hey")
     let client;
     try {
         // let errors = validationResult(req);
@@ -704,17 +705,17 @@ exports.placeorder = async (req, res, next) => {
         client = await getClient();
 
         for (const order of orders) {
-            const { product_code, total_amount } = order;
+            const { product_code, total_amount, name } = order;
             let { customer_id, status, payment_method, address } = order;
             const query_getproduct = `SELECT * FROM products WHERE product_code='${product_code}'`;
             const result_product = await client.query(query_getproduct);
 
             if (result_product.rows.length !== 0) {
                 const image_url = result_product.rows[0].image_url;
-                const query = `INSERT INTO orders (customer_id, order_date, status, total_amount, created_at, updated_at, img_url, product_code, address)
-                                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                const query = `INSERT INTO orders (customer_id, order_date, status, total_amount, created_at, updated_at, img_url, product_code, address,name)
+                                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)
                                 RETURNING order_id;`;
-                const values = [customer_id, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), status, total_amount, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), image_url, product_code, address];
+                const values = [customer_id, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), status, total_amount, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), image_url, product_code, address, name];
                 const result = await client.query(query, values);
                 const orderId = result.rows[0].order_id;
 
@@ -726,7 +727,7 @@ exports.placeorder = async (req, res, next) => {
                 const paymentValues = [orderId, total_amount, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), payment_method, "success", moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS')];
                 await client.query(paymentQuery, paymentValues);
             } else {
-                // return APIRes.getFinalResponse(false, `No Product exists for product code ${product_code}`, [], res);
+                return APIRes.getFinalResponse(false, `No Product exists for product code ${product_code}`, [], res);
             }
         }
 
