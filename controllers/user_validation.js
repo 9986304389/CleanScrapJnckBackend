@@ -142,16 +142,16 @@ exports.verifyOTP = async (req, res, next,) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["otp", "phonenumber"];
+        const requiredFields = ["otp", "email"];
         const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { otp, phonenumber } = userInput;
+        let { otp, email } = userInput;
         client = await getClient();
         const result = await client.query(
-            `SELECT * FROM userdetails WHERE phonenumber = '${phonenumber}'`,
+            `SELECT * FROM userdetails WHERE email = '${email}'`,
         );
 
         if (result.rows.length === 0) {
