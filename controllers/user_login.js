@@ -15,14 +15,14 @@ exports.usersiginup = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["name", "email", "phonenumber", "password"];
+        const requiredFields = ["name", "email", "phonenumber", "password","location"];
         const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
 
-        let { name, email, phonenumber, password, shipping_address, billing_address, created_at } = userInput;
+        let { name, email, phonenumber, password, shipping_address, billing_address, created_at,location,gst } = userInput;
 
         //Email and phonenumber check     
         if (!validateEmail(email) || !validatePhoneNumber(phonenumber)) {
@@ -44,8 +44,8 @@ exports.usersiginup = async (req, res, next) => {
         const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
 
         if (existingRecord.rows.length === 0) {
-            const insertQuery = 'INSERT INTO userdetails(name, email, phonenumber, password,usertype,shipping_address,billing_address,created_at) VALUES ($1, $2, $3, $4,$5,$6,$7,$8) RETURNING *';
-            const insertValues = [name, email, phonenumber, password, '0', shipping_address, billing_address, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS')];
+            const insertQuery = 'INSERT INTO userdetails(name, email, phonenumber, password,usertype,shipping_address,billing_address,created_at,location,gst) VALUES ($1, $2, $3, $4,$5,$6,$7,$8,$9,$10) RETURNING *';
+            const insertValues = [name, email, phonenumber, password, '0', shipping_address, billing_address, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'),location,gst];
             const result = await client.query(insertQuery, insertValues);
 
             if (result) {
