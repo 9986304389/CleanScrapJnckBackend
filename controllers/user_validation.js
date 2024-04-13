@@ -10,6 +10,7 @@ const otpGenerator = require('otp-generator');
 const moment = require('moment-timezone');
 const axios = require('axios');
 const userTokenCache = require('../helperfun/userTokenCache')
+const nodemailer = require('nodemailer');
 
 exports.authenticateUser = async (req, res, next) => {
     let client;
@@ -50,7 +51,7 @@ exports.authenticateUser = async (req, res, next) => {
             userTokenCache.set('userToken', token);
 
             // Passwords match, authentication successful
-            return APIRes.getFinalResponse(true, 'Authentication successful', [{ name: name, phonenumber: phoneNumber, email: email, token: token,usertype:usertype }], res);
+            return APIRes.getFinalResponse(true, 'Authentication successful', [{ name: name, phonenumber: phoneNumber, email: email, token: token, usertype: usertype }], res);
         } else {
             // Passwords don't match
             return APIRes.getFinalResponse(false, 'Invalid email or password', [], res);
@@ -75,12 +76,12 @@ exports.otpGeneate = async (req, res, next) => {
         throw errors.array();
     }
     const userInput = Utils.getReqValues(req);
-    const requiredFields = ["phonenumber"];
+    const requiredFields = ["email"];
     const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
     if (inputs !== true) {
         return APIRes.getNotExistsResult(`Required ${inputs}`, res);
     }
-    const { phonenumber } = userInput;
+    const { email } = userInput;
     client = await getClient();
     try {
         let { otp, expirationTime } = await generateOTPWithExpiration();
@@ -88,23 +89,29 @@ exports.otpGeneate = async (req, res, next) => {
         console.log('Expiration Time:', expirationTime);
 
         expirationTime = expirationTime;
-        const existingRecordQuery = 'SELECT * FROM userdetails WHERE phonenumber = $1';
-        const existingRecordValues = [phonenumber];
+        const existingRecordQuery = 'SELECT * FROM userdetails WHERE email = $1';
+        const existingRecordValues = [email];
 
         const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
+
+        if (existingRecord.rows.length == 0) {
+            return APIRes.getFinalResponse(false, 'invalid email id', [], res);
+        }
 
         if (existingRecord.rows.length > 0) {
             const query = `
             UPDATE userdetails
             SET otp = $1,expirationTime=$2
-            WHERE phonenumber = $3
+            WHERE email = $3
             RETURNING *`;
-            const values = [otp, expirationTime, phonenumber];
+            const values = [otp, expirationTime, email];
             const result = await client.query(query, values);
         }
-        const sendSMS = await SendSMSToUser(otp, expirationTime, phonenumber);
-        console.log(sendSMS)
-        if (sendSMS) {
+        //const sendSMS = await SendSMSToUser(otp, expirationTime, phonenumber);
+        const sendEmail = await SendEmailToUser(otp, expirationTime, email);
+        console.log(sendEmail)
+        // console.log(sendSMS)
+        if (sendEmail) {
             // Passwords match, authentication successful
             return APIRes.getFinalResponse(true, 'Get OTP successfully', [], res);
         }
@@ -217,4 +224,51 @@ const SendSMSToUser = async (otp, expirationTime, phonenumber) => {
 }
 
 
-//Password alogrithm
+const SendEmailToUser = async (otp, expirationTime, email) => {
+    // Create a transporter object using SMTP transport
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.hostinger.com', // Your SMTP server hostname
+        port: 465, // Your SMTP port
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: 'help@cleanscrapjunk.com', // Your email address
+            pass: 'Help@123' // Your email password
+        }
+    });
+
+    // Define email content
+    let mailOptions = {
+        from: 'help@cleanscrapjunk.com', // Sender address
+        to: email, // List of recipients
+        subject: 'OTP', // Subject line
+        text: `${otp} this OTP to login your cleanscrapjunk account. It will expire in 2 minutes. DO NOT share this code with anyone` // Plain text body
+        // You can also include HTML content:
+        // html: '<h1>This is a test email</h1><p>Sent from Node.js</p>'
+    };
+
+    try {
+        // Send email and wait for the result
+        const sendEmailResult = await email_send(transporter, mailOptions);
+        console.log(sendEmailResult); // Log the result
+        return sendEmailResult; // Return the result
+    } catch (error) {
+        console.error('Error sending email:', error);
+        return false; // Return false if there's an error
+    }
+};
+
+const email_send = async (transporter, mailOptions) => {
+    // Return a Promise that resolves when the email is sent or rejects if there's an error
+    return new Promise((resolve, reject) => {
+        // Send email
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+                reject(false); // Reject the Promise with false if there's an error
+            } else {
+                console.log('Email sent:', info.response);
+                resolve(true); // Resolve the Promise with true if the email is sent successfully
+            }
+        });
+    });
+};
