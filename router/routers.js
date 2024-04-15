@@ -103,6 +103,7 @@ router.post('/addProductsScrapMarket', checkToken, product.add_products_scrap_ma
 router.post('/EditproductsScrapMarket', checkToken, product.Editproducts_scrap_market);
 router.post('/addProductsPriceScrapMarket', checkToken, product.add_products_price_scrap_market);
 router.post('/EditproductsPriceScrapMarket', checkToken, product.Editproducts_price_scrap_market);
+router.post('/Addofferandeditoffer', checkToken, product.Addofferandeditoffer);
 
 router.get('/getOTP', checkToken, user_validation.otpGeneate);
 router.get('/verifyOTP', checkToken, user_validation.verifyOTP);
@@ -117,6 +118,7 @@ router.get('/getAllWeBuyProducts', checkToken, product.getAllWeBuyProducts)
 
 router.delete('/removeCartProductByUser', checkToken, product.removeCartProducts);
 router.delete('/removeAddress', checkToken, product.removeAddress);
+router.delete('/removeOffer', checkToken, product.removeoffers);
 
 router.get("/", async (req, res, next) => {
   return res.status(200).json({

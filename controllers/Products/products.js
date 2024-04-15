@@ -1119,4 +1119,139 @@ exports.getallScrapProductsPrice = async (req, res, next) => {
 };
 
 
+//add offers
+exports.Addofferandeditoffer = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
 
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["product_name", "rate", "size", "quantity", "product_code"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+
+        let { id, product_name, rate, size, quantity, product_code } = userInput;
+
+        client = await getClient();
+
+        if (id) {
+
+            // If address_id is not provided, it's an add operation
+            const checkofferQuery = `
+               SELECT * FROM offers
+               WHERE id = $1 and product_code=$2
+               
+           `;
+
+            const checkofferValues = [id,product_code];
+            const addressExists = await client.query(checkofferQuery, checkofferValues);
+
+            console.log(addressExists)
+            if (addressExists.rows.length > 0) {
+                // If address_id is provided, it's an edit operation
+                const updateQuery = `
+                UPDATE offers
+                SET id = $1, product_name = $2, rate = $3, size = $4, quantity = $5
+                WHERE id = $1
+                RETURNING *;
+            `;
+                const updateValues = [id, product_name, rate, size, quantity];
+                const result = await client.query(updateQuery, updateValues);
+
+                if (result.rows.length > 0) {
+                    return APIRes.getFinalResponse(true, `offer updated successfully.`, result.rows, res);
+                } else {
+                    return APIRes.getFinalResponse(false, `offer with ID ${id} not found.`, [], res);
+                }
+            }
+            else {
+                return APIRes.getFinalResponse(false, `offer with ID ${id} not found.`, [], res);
+            }
+        } else {
+            // If address_id is not provided, it's an add operation
+            const checkAddressQuery = `
+                SELECT * FROM offers
+                WHERE product_code = $1
+               
+            `;
+
+            const checkAddressValues = [product_code];
+            const addressExists = await client.query(checkAddressQuery, checkAddressValues);
+            console.log(addressExists)
+            console.log(addressExists.rows.length)
+            if (addressExists.rows.length == 0) {
+                const insertQuery = `
+                    INSERT INTO offers (product_name, rate, size, quantity,product_code)
+                    VALUES ($1, $2, $3, $4,$5)
+                    RETURNING *;
+                `;
+                const insertValues = [product_name, rate, size, quantity,product_code];
+                const result = await client.query(insertQuery, insertValues);
+
+                if (result.rows.length > 0) {
+                    return APIRes.getFinalResponse(true, `offer added successfully.`, result.rows, res);
+                }
+            }
+            else {
+                return APIRes.getFinalResponse(false, `offer exist.`, [], res);
+            }
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+
+exports.removeoffers = async (req, res, next) => {
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["id"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+        let { id } = userInput;
+
+        client = await getClient();
+        const existingRecordQuery = 'SELECT * FROM offers WHERE id = $1';
+        const existingRecordValues = [id];
+        const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
+        if (existingRecord.rows.length === 0) {
+            return APIRes.getFinalResponse(false, ` offer id does not exist.`, [], res);
+        } else {
+            // Delete records for the given customer_id
+            const deleteQuery = 'DELETE FROM offers WHERE id = $1';
+            const existingRecordValues = [id]
+            const result = await client.query(deleteQuery, existingRecordValues);
+
+            return APIRes.getFinalResponse(true, `Successfully deleted offer for id:${id}`, [], res);
+
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
