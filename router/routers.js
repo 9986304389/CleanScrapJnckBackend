@@ -115,6 +115,7 @@ router.get("/getallScrapProductsPrice", checkToken, product.getallScrapProductsP
 
 router.get('/getAddressByUser', checkToken, product.getAddressByUser);
 router.get('/getAllWeBuyProducts', checkToken, product.getAllWeBuyProducts)
+router.get('/getAllofferProducts', checkToken, product.getalloffers);
 
 router.delete('/removeCartProductByUser', checkToken, product.removeCartProducts);
 router.delete('/removeAddress', checkToken, product.removeAddress);

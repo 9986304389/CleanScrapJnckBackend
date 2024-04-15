@@ -744,6 +744,11 @@ exports.placeorder = async (req, res, next) => {
     }
 };
 
+exports.placeordersendtoemail = async (req, res, next) => {
+
+    
+}
+
 
 // Update order status
 exports.updateOrderStatus = async (req, res, next) => {
@@ -1148,7 +1153,7 @@ exports.Addofferandeditoffer = async (req, res, next) => {
                
            `;
 
-            const checkofferValues = [id,product_code];
+            const checkofferValues = [id, product_code];
             const addressExists = await client.query(checkofferQuery, checkofferValues);
 
             console.log(addressExists)
@@ -1190,7 +1195,7 @@ exports.Addofferandeditoffer = async (req, res, next) => {
                     VALUES ($1, $2, $3, $4,$5)
                     RETURNING *;
                 `;
-                const insertValues = [product_name, rate, size, quantity,product_code];
+                const insertValues = [product_name, rate, size, quantity, product_code];
                 const result = await client.query(insertQuery, insertValues);
 
                 if (result.rows.length > 0) {
@@ -1244,6 +1249,42 @@ exports.removeoffers = async (req, res, next) => {
 
             return APIRes.getFinalResponse(true, `Successfully deleted offer for id:${id}`, [], res);
 
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
+exports.getalloffers = async (req, res, next) => {
+    let client;
+    try {
+        const userInput = Utils.getReqValues(req);
+        const { product_code, Active_Status, type } = userInput;
+        client = await getClient();
+        let query = `SELECT * FROM offers WHERE 1=1`
+
+        // if (product_code) {
+        //     query = query + ` and product_code = '${product_code}'`; // Ensure proper spacing and quoting for the condition
+        // }
+        // if (Active_Status) {
+        //     query = query + ` and product_status = '${Active_Status}'`
+        // }
+        // if (type) {
+        //     query = query + ` and type = '${type}'`
+        // }
+
+        const existingRecord = await client.query(query);
+
+        if (existingRecord.rows.length != 0) {
+            return APIRes.getFinalResponse(true, `Successfully received product details.`, existingRecord.rows, res);
+        } else {
+            return APIRes.getFinalResponse(false, `No Product's`, [], res);
         }
     } catch (error) {
         console.error('Error:', error);
