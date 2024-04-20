@@ -104,6 +104,7 @@ router.post('/EditproductsScrapMarket', checkToken, product.Editproducts_scrap_m
 router.post('/addProductsPriceScrapMarket', checkToken, product.add_products_price_scrap_market);
 router.post('/EditproductsPriceScrapMarket', checkToken, product.Editproducts_price_scrap_market);
 router.post('/Addofferandeditoffer', checkToken, product.Addofferandeditoffer);
+router.post('/sendPlaceorderemail', checkToken, product.placeordersendtoemail);
 
 router.get('/getOTP', checkToken, user_validation.otpGeneate);
 router.get('/verifyOTP', checkToken, user_validation.verifyOTP);

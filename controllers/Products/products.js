@@ -6,6 +6,8 @@ const { getClient } = require("../../helperfun/postgresdatabase");
 const sharp = require('sharp');
 const path = require('path');
 const moment = require('moment-timezone');
+const template = require('../emailTemplate/emailtemplate');
+const nodemailer = require('nodemailer');
 
 exports.Addproducts = async (req, res, next) => {
     let client;
@@ -746,9 +748,100 @@ exports.placeorder = async (req, res, next) => {
 
 exports.placeordersendtoemail = async (req, res, next) => {
 
-    
+    let client;
+    try {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw errors.array();
+        }
+
+        const userInput = Utils.getReqValues(req);
+        const requiredFields = ["userdetails", "orderdetails"];
+        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        if (inputs !== true) {
+            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        }
+
+        let { userdetails, orderdetails } = userInput;
+
+        let email_send = await SendEmailToUser(userdetails, orderdetails);
+
+        if (email_send) {
+            return APIRes.getFinalResponse(true, `Orders placed successfully.`, [], res);
+
+        }
+        else {
+            return APIRes.getFinalResponse(false, `Unable to place Orders.`, [], res);
+        }
+
+
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+
 }
 
+const SendEmailToUser = async (userdetails, orderdetails, email) => {
+    // Create a transporter object using SMTP transport
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.hostinger.com', // Your SMTP server hostname
+        port: 465, // Your SMTP port
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: 'help@cleanscrapjunk.com', // Your email address
+            pass: 'Help@123' // Your email password
+        }
+    });
+
+    // console.log(template.template)
+    // let htmlcontent=template.Body.toString('utf-8');
+    // Define email content
+    const modifytemp = template.template.replace('{nameofreceiver}', "kavitha")
+        .replace('{addressofreceiver}', "chennai")
+        .replace('{cell}', "chennai")
+        .replace('{email}', "test@gmail.com")
+        .replace('{GSTIn}', "gst5689999999")
+
+    let mailOptions = {
+        from: 'help@cleanscrapjunk.com', // Sender address
+        to: 'kavithaec1431@gmail.com', // List of recipients
+        subject: 'OTP', // Subject line
+        html: modifytemp
+        // html: '<h1>This is a test email</h1><p>Sent from Node.js</p>'
+    };
+
+    try {
+        // Send email and wait for the result
+        const sendEmailResult = await email_send(transporter, mailOptions);
+        console.log(sendEmailResult); // Log the result
+        return sendEmailResult; // Return the result
+    } catch (error) {
+        console.error('Error sending email:', error);
+        return false; // Return false if there's an error
+    }
+};
+
+const email_send = async (transporter, mailOptions) => {
+    // Return a Promise that resolves when the email is sent or rejects if there's an error
+    return new Promise((resolve, reject) => {
+        // Send email
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+                reject(false); // Reject the Promise with false if there's an error
+            } else {
+                console.log('Email sent:', info.response);
+                resolve(true); // Resolve the Promise with true if the email is sent successfully
+            }
+        });
+    });
+};
 
 // Update order status
 exports.updateOrderStatus = async (req, res, next) => {
@@ -1134,13 +1227,13 @@ exports.Addofferandeditoffer = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["product_name", "rate", "size", "quantity", "product_code"];
+        const requiredFields = ["product_name", "rate", "size", "quantity", "product_code", "description"];
         const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { id, product_name, rate, size, quantity, product_code } = userInput;
+        let { id, product_name, rate, size, quantity, product_code, description } = userInput;
 
         client = await getClient();
 
@@ -1161,11 +1254,11 @@ exports.Addofferandeditoffer = async (req, res, next) => {
                 // If address_id is provided, it's an edit operation
                 const updateQuery = `
                 UPDATE offers
-                SET id = $1, product_name = $2, rate = $3, size = $4, quantity = $5
+                SET id = $1, product_name = $2, rate = $3, size = $4, quantity = $5, product_code=$6,description=$7
                 WHERE id = $1
                 RETURNING *;
             `;
-                const updateValues = [id, product_name, rate, size, quantity];
+                const updateValues = [id, product_name, rate, size, quantity, product_code, description];
                 const result = await client.query(updateQuery, updateValues);
 
                 if (result.rows.length > 0) {
@@ -1191,11 +1284,11 @@ exports.Addofferandeditoffer = async (req, res, next) => {
             console.log(addressExists.rows.length)
             if (addressExists.rows.length == 0) {
                 const insertQuery = `
-                    INSERT INTO offers (product_name, rate, size, quantity,product_code)
-                    VALUES ($1, $2, $3, $4,$5)
+                    INSERT INTO offers (product_name, rate, size, quantity,product_code,description)
+                    VALUES ($1, $2, $3, $4,$5,$6)
                     RETURNING *;
                 `;
-                const insertValues = [product_name, rate, size, quantity, product_code];
+                const insertValues = [product_name, rate, size, quantity, product_code, description];
                 const result = await client.query(insertQuery, insertValues);
 
                 if (result.rows.length > 0) {
@@ -1269,15 +1362,6 @@ exports.getalloffers = async (req, res, next) => {
         client = await getClient();
         let query = `SELECT * FROM offers WHERE 1=1`
 
-        // if (product_code) {
-        //     query = query + ` and product_code = '${product_code}'`; // Ensure proper spacing and quoting for the condition
-        // }
-        // if (Active_Status) {
-        //     query = query + ` and product_status = '${Active_Status}'`
-        // }
-        // if (type) {
-        //     query = query + ` and type = '${type}'`
-        // }
 
         const existingRecord = await client.query(query);
 

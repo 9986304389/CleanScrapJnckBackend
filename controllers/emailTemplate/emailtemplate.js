@@ -1,0 +1,238 @@
+exports.template = `<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0;">
+ 	<meta name="format-detection" content="telephone=no"/>
+
+	<!-- Responsive Mobile-First Email Template by Konstantin Savchenko, 2015.
+	https://github.com/konsav/email-templates/  -->
+
+	<style>
+/* Reset styles */ 
+body { margin: 0; padding: 0; min-width: 100%; width: 100% !important; height: 100% !important;}
+body, table, td, div, p, a { -webkit-font-smoothing: antialiased; text-size-adjust: 100%; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; line-height: 100%; }
+table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-collapse: collapse !important; border-spacing: 0; }
+img { border: 0; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+#outlook a { padding: 0; }
+.ReadMsgBody { width: 100%; } .ExternalClass { width: 100%; }
+.ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height: 100%; }
+
+/* Rounded corners for advanced mail clients only */ 
+@media all and (min-width: 560px) {
+	.container { border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px; -khtml-border-radius: 8px;}
+}
+
+/* Set color for auto links (addresses, dates, etc.) */ 
+a, a:hover {
+	color: #127DB3;
+}
+.footer a, .footer a:hover {
+	color: #999999;
+}
+
+ 	</style>
+
+	<!-- MESSAGE SUBJECT -->
+	<title>Open quote roundup</title>
+
+</head>
+
+<!-- BODY -->
+<!-- Set message background color (twice) and text color (twice) -->
+<body topmargin="0" rightmargin="0" bottommargin="0" leftmargin="0" marginwidth="0" marginheight="0" width="100%" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; width: 100%; height: 100%; -webkit-font-smoothing: antialiased; text-size-adjust: 100%; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; line-height: 100%;
+	background-color: #D5E2EC;
+	color: #000000;"
+	bgcolor="#D5E2EC"
+	text="#303344">
+
+<!-- SECTION / BACKGROUND -->
+<!-- Set message background color one again -->
+<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; border-spacing: 0; margin-top: 30px; padding: 0; width: 100%;" class="background"><tr><td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; padding: 0;"
+	bgcolor="#D5E2EC">
+
+<!-- WRAPPER -->
+<!-- Set wrapper width (twice) -->
+<table border="0" cellpadding="0" cellspacing="0" align="center"
+	width="700" style="border-collapse: collapse; border-spacing: 0; padding: 0; width: inherit;
+	max-width: 700px;" class="wrapper">
+
+	<tr>
+		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%;
+			padding-top: 20px;
+			padding-bottom: 20px;">
+			
+			<h1>Quotation<h1/>
+		</td>
+	</tr>
+
+<!-- End of WRAPPER -->
+</table>
+
+<!-- WRAPPER / CONTEINER -->
+<!-- Set conteiner background color -->
+<table border="0" cellpadding="0" cellspacing="0" align="center"
+	bgcolor="#FFFFFF"
+	width="700" style="border-collapse: collapse; border-spacing: 0; padding: 0; width: inherit; 
+	max-width: 700px;" class="container">
+
+	<!-- HEADER -->
+	<!-- Set text color and font family ("sans-serif" or "Georgia, serif") -->
+	<div style="display: flex; flex-direction: column; padding-top: 20px;">
+  <div style="margin-bottom: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+	
+      <div style="flex: 1; padding: 10px;">
+	  <p style="margin-bottom: 5px;font-size: 1.9em; text-align:center">SHIPPER</p>
+        <h3 style="margin-top: 3; margin-bottom: 10px; font-size: 1.5em;">Me:Clean Scrap Junk</h3>
+        <p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Address:Chennai</p>
+        <p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Cell:7010669844/8939478022</p>
+        <p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Email:cleanscrapjunk@gmail.com</p>
+		<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">GSTIN:33ADJPA3181C1Z7</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+   
+	
+	<div style="flex: 1; padding: 10px;">
+	<p style="margin-bottom: 5px;font-size: 1.9em; text-align:center">RECEIVER</p>
+	  <h3 style="margin-top: 3; margin-bottom: 10px; font-size: 1.5em;">Name:{nameofreceiver}</h3>
+	  <p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Address:{addressofreceiver}</p>
+	  <p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Cell:{cell}</p>
+	  <p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Email:{email}</p>
+	  <p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">GSTIN:{GSTIn}</p>
+	</div>
+    </div>
+  </div>
+</div>
+
+	<!-- PARAGRAPH -->
+	<!-- Set text color and font family ("sans-serif" or "Georgia, serif"). Duplicate all text styles in links, including line-height -->
+	
+	<!-- LINE -->
+	<!-- Set line color -->
+	<tr>	
+		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 8%; padding-right: 8%; width: 87.5%;
+			padding-top: 50px;" class="line">
+		</td>
+	</tr>	
+	<!-- LIST -->
+	<tr>
+		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 8%; padding-right: 8%;" class="list-item"><table align="center" border="0" cellspacing="0" cellpadding="0" style="width: 100%; margin: 0; padding: 0; border-collapse: collapse; border-spacing: 0;">
+			<tr td align="left" valign="top" style="font-size: 13px; font-weight: 400; line-height: 160%; border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0;
+					text-align: left;
+					padding-top: 30px;
+					color: #7d8d9e;
+					text-transform: uppercase;
+					font-family: 'Arial', sans-serif;;" class="paragraph">
+				<th scope="col" style="padding-bottom: 10px;">S.No</th>
+				<th scope="col" style="padding-bottom: 10px;">Discription</th>
+				<th scope="col" style="padding-bottom: 10px;">Pieces</th>
+				<th scope="col" style="padding-bottom: 10px;">Quantity</th>
+				<th scope="col" style="padding-bottom: 10px;">Rate PerKg</th>
+				<th scope="col" style="padding-bottom: 10px;" align="right">Amount</th>
+			</tr>
+			
+			<!-- LIST ITEM -->
+			<tr align="left" valign="top" style="font-size: 18px; font-weight: 400; line-height: 160%; border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0;
+					text-align: left;
+					padding-top: 30px;
+					color: #303344;
+					font-family: 'Arial', sans-serif;;" class="paragraph">
+				<!-- LIST ITEM TEXT -->
+				<td style="padding: 20px 0 10px;">Bob's Burgers</td>
+				<td style="padding: 20px 0 10px;">10/29/2018</td>
+				<td align="right" style="padding: 20px 0 10px;">$2,108</td>
+				<td align="right" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-top: 10px; width: auto;" class="button"><a
+			href="{{quote_link}}" target="_blank" style="text-decoration: none;">
+				<table border="0" cellpadding="0" cellspacing="0" align="right" style="border-collapse: collapse; border-spacing: 0; padding: 0;"><tr><td align="center" valign="middle" style="padding: 8px 15px; margin: 0; text-decoration: none; border-collapse: collapse; border-spacing: 0; border-radius: 2px; -webkit-border-radius: 2px; -moz-border-radius: 2px; -khtml-border-radius: 2px;"
+					bgcolor=""><a target="_blank" style="text-decoration: none;
+					color: #4579FF; font-family: 'Arial', sans-serif; font-size: 16px; font-weight: 600; line-height: 120%;"
+					href="https://app.attuneinsurance.com">
+					View quote
+					</a>
+			</td></tr></table></a>
+		</td>
+			</tr>
+			<tr align="left" valign="top" style="font-size: 18px; font-weight: 400; line-height: 160%; border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0;>
+			
+
+		</table></td>
+	</tr>
+		<!-- BUTTON -->
+	<!-- Set button background color at TD, link/text color at A and TD, font family ("sans-serif" or "Georgia, serif") at TD. For verification codes add "letter-spacing: 5px;". Link format: http://domain.com/?utm_source={{Campaign-Source}}&utm_medium=email&utm_content={{Button-Name}}&utm_campaign={{Campaign-Name}} -->
+<!-- 	<tr>
+		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 8%; padding-right: 8%; width: 87.5%;
+			padding-top: 50px;
+			padding-bottom: 5px;" class="button"><a
+			href="https://github.com/konsav/email-templates/" target="_blank" style="text-decoration: none;">
+				<table border="0" cellpadding="0" cellspacing="0" align="center" style="width: 100%; border-collapse: collapse; border-spacing: 0; padding: 0;"><tr><td align="center" valign="middle" style="padding: 18px 24px; margin: 0; text-decoration: none; border-collapse: collapse; border-spacing: 0; border-radius: 2px; -webkit-border-radius: 2px; -moz-border-radius: 2px; -khtml-border-radius: 2px;"
+					bgcolor="#4579FF"><a target="_blank" style="text-decoration: none;
+					color: #FFFFFF; font-family: 'Arial', sans-serif; font-size: 18px; font-weight: 600; line-height: 120%;"
+					href="https://app.attuneinsurance.com">
+					Review quotes
+					</a>
+			</td></tr></table></a>
+		</td>
+	</tr> -->
+
+	<!-- PARAGRAPH -->
+	<!-- Set text color and font family ("sans-serif" or "Georgia, serif"). Duplicate all text styles in links, including line-height -->
+	<tr>
+		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%; font-size: 16px; font-weight: 400; line-height: 160%;
+			padding-top: 30px;
+			padding-bottom: 15px;
+			color: #525c6c;
+			font-family: 'Arial', sans-serif;" class="paragraph">
+				Questions? <a href="mailto:help@attuneinsurance.com" target="_blank" style="color: #4579FF; font-family: 'Arial', sans-serif; font-size: 16px; font-weight: 400; line-height: 160%;">help@attuneinsurance.com</a> | 1-800-201-7159
+		</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%; font-size: 16px; font-weight: 400; line-height: 160%;
+			padding-top: 0px;
+			padding-bottom: 30px;
+			color: #7d8d9e;
+			font-family: 'Arial', sans-serif;" class="paragraph">© Attune Insurance 2018</td>
+	</tr>
+	
+
+<!-- End of WRAPPER -->
+</table>
+
+<!-- WRAPPER -->
+<!-- Set wrapper width (twice) -->
+<table border="0" cellpadding="0" cellspacing="0" align="center"
+	width="560" style="border-collapse: collapse; border-spacing: 0; padding: 0; width: inherit;
+	max-width: 560px;" class="wrapper">
+
+	<!-- FOOTER -->
+	<!-- Set text color and font family ("sans-serif" or "Georgia, serif"). Duplicate all text styles in links, including line-height -->
+	<tr>
+		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%; font-size: 13px; font-weight: 400; line-height: 150%;
+			padding-top: 30px;
+			padding-bottom: 20px;
+			color: #7d8d9e;
+			font-family: 'Arial', sans-serif;" class="footer">
+			Attune Insurance Services, LLC, 40 Exchange Place, Floor 8, NY, NY 10005 is an insurance producer licensed in all states and the District of Columbia.Visit www.attuneinsurance.com for full corporate, licensing and legal information. Businessowners' insurance provided by Blackboard Insurance Company, NY, NY. Commercial Liability Excess insurance provided by New Hampshire Insurance Company, NY, NY. Both insurers are members of American International Group, which is rated “A” (Excellent) by A.M. Best Company. Visit www.aig.com for full insurer financial and business information. Workers’ Compensation insurance provided by Employers Insurance Company of Nevada, Reno, NV, and other EMPLOYERS® companies. Employers Holdings, Inc. (NYSE:EIG) is a holding company with subsidiaries that are specialty providers of workers' compensation insurance and services focused on select small businesses engaged in low-to-medium hazard industries. The company, through its subsidiaries, operates in 43 states and the District of Columbia. Insurance is offered by Employers Insurance Company of Nevada, Employers Compensation Insurance Company, Employers Preferred Insurance Company, and Employers Assurance Company, all rated A- (Excellent) by A.M. Best Company. *Not all companies write in all states. Additional information can be found at: www.employers.com.
+<br>
+			<br>
+Copyright © 2018 Attune Insurance Services, LLC, All rights reserved.
+
+				<!-- ANALYTICS -->
+				<!-- https://www.google-analytics.com/collect?v=1&tid={{UA-Tracking-ID}}&cid={{Client-ID}}&t=event&ec=email&ea=open&cs={{Campaign-Source}}&cm=email&cn={{Campaign-Name}} -->
+				<img width="1" height="1" border="0" vspace="0" hspace="0" style="margin: 0; padding: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; border: none; display: block;"
+				src="https://raw.githubusercontent.com/konsav/email-templates/master/images/tracker.png" />
+
+		</td>
+	</tr>
+
+<!-- End of WRAPPER -->
+</table>
+
+<!-- End of SECTION / BACKGROUND -->
+</td></tr></table>
+
+</body>
+</html>`
