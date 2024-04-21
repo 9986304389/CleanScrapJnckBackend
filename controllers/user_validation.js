@@ -42,6 +42,7 @@ exports.authenticateUser = async (req, res, next) => {
         const phoneNumber = result.rows[0].phonenumber;
         const email = result.rows[0].email;
         const usertype = result.rows[0].usertype;
+        const location = result.rows[0].location;
 
         // Compare the entered password with the password from the database
         if (password === result_password && phoneNumber == phoneNumber) {
@@ -51,7 +52,7 @@ exports.authenticateUser = async (req, res, next) => {
             userTokenCache.set('userToken', token);
 
             // Passwords match, authentication successful
-            return APIRes.getFinalResponse(true, 'Authentication successful', [{ name: name, phonenumber: phoneNumber, email: email, token: token, usertype: usertype }], res);
+            return APIRes.getFinalResponse(true, 'Authentication successful', [{ name: name, phonenumber: phoneNumber, email: email, token: token, usertype: usertype,location:location }], res);
         } else {
             // Passwords don't match
             return APIRes.getFinalResponse(false, 'Invalid email or password', [], res);
