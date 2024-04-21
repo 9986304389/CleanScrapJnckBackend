@@ -717,7 +717,7 @@ exports.placeorder = async (req, res, next) => {
             const result_product = await client.query(query_getproduct);
 
             if (result_product.rows.length == 0) {
-                const query_getproduct = `SELECT * FROM webyproducts WHERE product_code='${product_code}'`;
+                query_getproduct = `SELECT * FROM webyproducts WHERE product_code='${product_code}'`;
                 result_product = await client.query(query_getproduct);
             }
             if (result_product.rows.length !== 0) {
