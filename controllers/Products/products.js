@@ -558,7 +558,7 @@ exports.WeBuyProducts = async (req, res, next) => {
                 }
             }
             else {
-                return APIRes.getFinalResponse(false, `Products with ID ${product_id} not found.`, [], res);
+                return APIRes.getFinalResponse(false, `Products with ID ${product_id} not found. or Products code not found`, [], res);
             }
         } else {
             // If address_id is not provided, it's an add operation
