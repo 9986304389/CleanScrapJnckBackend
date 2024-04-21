@@ -552,7 +552,7 @@ exports.WeBuyProducts = async (req, res, next) => {
                 const result = await client.query(updateQuery, updateValues);
 
                 if (result.rows.length > 0) {
-                    return APIRes.getFinalResponse(true, `Prodct updated successfully.`, result.rows, res);
+                    return APIRes.getFinalResponse(true, `Product updated successfully.`, result.rows, res);
                 } else {
                     return APIRes.getFinalResponse(false, `Products with ID ${product_id} not found.`, [], res);
                 }
