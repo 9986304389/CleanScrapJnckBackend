@@ -712,9 +712,14 @@ exports.placeorder = async (req, res, next) => {
         for (const order of orders) {
             const { product_code, total_amount, name } = order;
             let { customer_id, status, payment_method, address } = order;
+
             const query_getproduct = `SELECT * FROM products WHERE product_code='${product_code}'`;
             const result_product = await client.query(query_getproduct);
 
+            if (result_product.rows.length == 0) {
+                const query_getproduct = `SELECT * FROM webyproducts WHERE product_code='${product_code}'`;
+                result_product = await client.query(query_getproduct);
+            }
             if (result_product.rows.length !== 0) {
                 const image_url = result_product.rows[0].image_url;
                 const query = `INSERT INTO orders (customer_id, order_date, status, total_amount, created_at, updated_at, img_url, product_code, address,name)
