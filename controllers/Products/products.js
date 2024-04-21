@@ -517,12 +517,15 @@ exports.WeBuyProducts = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["name", "description", "price", "quantity_available", "image_url", "product_code", "type"];
-        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
-        if (inputs !== true) {
-            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
-        }
 
+        console.log(userInput.product_id)
+        if (userInput.product_id == undefined) {
+            const requiredFields = ["name", "description", "price", "quantity_available", "image_url", "product_code", "type"];
+            const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+            if (inputs !== true) {
+                return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+            }
+        }
         let { product_id, name, description, price, quantity_available, category_id, created_at, updated_at, image_url, product_code, type } = userInput;
 
         client = await getClient();
@@ -541,11 +544,11 @@ exports.WeBuyProducts = async (req, res, next) => {
                 // If address_id is provided, it's an edit operation
                 const updateQuery = `
                 UPDATE webyproducts
-                SET name = $1, description = $2, price = $3, quantity_available = $4, category_id = $5, created_at = $6, updated_at = $7, image_url = $8,product_code=$9,type=$10
+                SET name = $1, description = $2, price = $3, updated_at = $4
                 WHERE product_id = '${product_id}'
                 RETURNING *;
             `;
-                const updateValues = [name, description, price, quantity_available, category_id, addressExists.rows[0].created_at, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), image_url, product_code, type];
+                const updateValues = [name, description, price, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS')];
                 const result = await client.query(updateQuery, updateValues);
 
                 if (result.rows.length > 0) {
