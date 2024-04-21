@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { secretKey } = require('../helperfun/jwtconfig');
 const user_login = require('../controllers/user_login');
 const user_validation = require('../controllers/user_validation');
+const resetPassword = require('../controllers/resetPassword');
 const product = require('../controllers/Products/products')
 const router = express.Router();
 const app = express();
@@ -105,6 +106,7 @@ router.post('/addProductsPriceScrapMarket', checkToken, product.add_products_pri
 router.post('/EditproductsPriceScrapMarket', checkToken, product.Editproducts_price_scrap_market);
 router.post('/Addofferandeditoffer', checkToken, product.Addofferandeditoffer);
 router.post('/sendPlaceorderemail', checkToken, product.placeordersendtoemail);
+router.post('/resetPassword', resetPassword.reset_password);
 
 router.get('/getOTP', checkToken, user_validation.otpGeneate);
 router.get('/verifyOTP', checkToken, user_validation.verifyOTP);
