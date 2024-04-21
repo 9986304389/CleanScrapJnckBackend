@@ -535,9 +535,9 @@ exports.WeBuyProducts = async (req, res, next) => {
             // If address_id is not provided, it's an add operation
             const checkAddressQuery = `
                SELECT * FROM webyproducts
-               WHERE product_id = $1`;
+               WHERE product_id = $1 and product_code= $2`;
 
-            const checkAddressValues = [product_id];
+            const checkAddressValues = [product_id, product_code];
             const addressExists = await client.query(checkAddressQuery, checkAddressValues);
 
             if (addressExists.rows.length > 0) {
@@ -545,7 +545,7 @@ exports.WeBuyProducts = async (req, res, next) => {
                 const updateQuery = `
                 UPDATE webyproducts
                 SET name = $1, description = $2, price = $3, updated_at = $4
-                WHERE product_id = '${product_id}'
+                WHERE product_id = '${product_id}' and product_code= '${product_code}'
                 RETURNING *;
             `;
                 const updateValues = [name, description, price, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS')];
