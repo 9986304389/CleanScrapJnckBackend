@@ -19,13 +19,13 @@ exports.Addproducts = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["product_code", "name", "description", "price", "quantity_available", "category_id", "type"];
+        const requiredFields = ["product_code", "name", "description", "price", "quantity_available", "category_id", "type","typeofproduct"];
         const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { product_code, name, description, price, quantity_available, category_id, image_url, type } = userInput;
+        let { product_code, name, description, price, quantity_available, category_id, image_url, type,typeofproduct } = userInput;
 
         //image_url = `${process.env.DOMAIN + image_url}`;
 
@@ -38,11 +38,11 @@ exports.Addproducts = async (req, res, next) => {
 
         if (existingRecord.rows.length === 0) {
             const query = `
-                            INSERT INTO products (product_code,name, description, price, quantity_available, category_id, image_url,created_at,type)
-                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8,$9)
+                            INSERT INTO products (product_code,name,description, price, quantity_available, category_id, image_url,created_at,type,typeofproduct)
+                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8,$9,$10)
                             RETURNING *;
                             `;
-            const values = [product_code, name, description, price, quantity_available, category_id, image_url, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), type];
+            const values = [product_code, name, description, price, quantity_available, category_id, image_url, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), type,typeofproduct];
             const result = await client.query(query, values);
 
             if (result) {
@@ -520,13 +520,13 @@ exports.WeBuyProducts = async (req, res, next) => {
 
         console.log(userInput.product_id)
         if (userInput.product_id == undefined) {
-            const requiredFields = ["name", "description", "price", "quantity_available", "image_url", "product_code", "type"];
+            const requiredFields = ["name", "description", "price", "quantity_available", "image_url", "product_code", "type","typeofproduct"];
             const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
             if (inputs !== true) {
                 return APIRes.getNotExistsResult(`Required ${inputs}`, res);
             }
         }
-        let { product_id, name, description, price, quantity_available, category_id, created_at, updated_at, image_url, product_code, type } = userInput;
+        let { product_id, name, description, price, quantity_available, category_id, created_at, updated_at, image_url, product_code, type,typeofproduct } = userInput;
 
         client = await getClient();
 
@@ -575,11 +575,11 @@ exports.WeBuyProducts = async (req, res, next) => {
                 return APIRes.getFinalResponse(false, `Product already exists.`, [], res);
             } else {
                 const insertQuery = `
-                    INSERT INTO webyproducts (name, description, price, quantity_available, category_id, created_at,updated_at, image_url, product_code, type)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10)
+                    INSERT INTO webyproducts (name, description, price, quantity_available, category_id, created_at,updated_at, image_url, product_code, type,typeofproduct)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10,$11)
                     RETURNING *;
                 `;
-                const insertValues = [name, description, price, quantity_available, category_id, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), image_url, product_code, type];
+                const insertValues = [name, description, price, quantity_available, category_id, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), image_url, product_code, type,typeofproduct];
                 const result = await client.query(insertQuery, insertValues);
 
                 if (result.rows.length > 0) {
