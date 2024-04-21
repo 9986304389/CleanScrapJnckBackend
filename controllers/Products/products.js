@@ -98,7 +98,7 @@ exports.Editproducts = async (req, res, next) => {
             const result = await client.query(query, values);
 
             if (result) {
-                return APIRes.getFinalResponse(true, `Edit Product created successfully.`, [], res);
+                return APIRes.getFinalResponse(true, `Edit Product successfully.`, [], res);
             }
         } else {
             return APIRes.getFinalResponse(false, `Product not exists`, [], res);
