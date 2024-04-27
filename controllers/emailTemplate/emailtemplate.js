@@ -256,7 +256,7 @@ exports.template = `<html xmlns="http://www.w3.org/1999/xhtml">
 				style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-right: 1px solid #ccc; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
 
 				<div style="flex: 1; padding: 10px;">
-					<p style="margin-bottom: 5px;font-size: 1.9em; text-align:center">THANK YOU FOR YOUR BUSINESS!
+					<p style="margin-bottom: 5px;font-size: 1.2em; text-align:center">THANK YOU FOR YOUR BUSINESS!
 					</p>
 					<p style="margin-top: 0; margin-bottom: 5px; font-size: 1.5em;">
 					Signature / Stamp:MAANAV BOTHRA.
@@ -275,7 +275,7 @@ exports.template = `<html xmlns="http://www.w3.org/1999/xhtml">
 
 
 				<div style="flex: 1; padding: 10px;">
-					<p style="margin-bottom: 5px;font-size: 1.9em; text-align:center">TOTAL AMOUNT:{totalAmount}</p>
+					<p style="margin-bottom: 5px;font-size: 1.1em; text-align:center">TOTAL AMOUNT:{totalAmount}</p>
 					<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">
 					SGST @ 9%:{withsgst}
 					</p>
