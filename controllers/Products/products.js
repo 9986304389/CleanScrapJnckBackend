@@ -812,12 +812,14 @@ const SendEmailToUser = async (userdetails, orderdetails, address, totalAmount) 
     // let htmlcontent=template.Body.toString('utf-8');
     // Define email content
 
+    console.log(userdetails)
+    console.log(address)
     let sgst = ((totalAmount * 9) / 100)
     const modifytemp = template.template.replace('{nameofreceiver}', userdetails.name)
-        .replace('{addressofreceiver}', address)
+        .replace('{addressofreceiver}', `${address.address_line1} ${address.address_line2} ${address.city} ${address.state} ${address.postal_code}`)
         .replace('{cell}', userdetails.phonenumber)
         .replace('{email}', userdetails.name)
-        .replace('{GSTIn}', "gst5689999999")
+        .replace('{GSTIn}', " ")
         .replace('{items-table}', orderdetails.map((item, index) =>
             `<tr>
                 <td style="padding: 20px 0 10px;">${index + 1}</td>
