@@ -820,6 +820,7 @@ const SendEmailToUser = async (userdetails, orderdetails, address, totalAmount) 
         .replace('{cell}', userdetails?.phoneNumber??'')
         .replace('{email}', userdetails?.email??'') 
         .replace('{GSTIn}', " ")
+        .replace('{currentDate}',getCurrentDate())
         .replace('{items-table}', orderdetails.map((item, index) =>
             `<tr>
                 <td style="padding: 20px 0 10px;">${index + 1}</td>
@@ -852,6 +853,22 @@ const SendEmailToUser = async (userdetails, orderdetails, address, totalAmount) 
     }
 };
 
+const getCurrentDate = () => {
+    const currentDate = new Date();
+  
+    // Get day, month, and year from the current date
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // January is 0, so we add 1
+    const year = currentDate.getFullYear();
+  
+    // Format the date as dd.mm.yyyy
+    const formattedDate = `${day}.${month}.${year}`;
+  
+    return formattedDate;
+  };
+  
+
+  
 const email_send = async (transporter, mailOptions) => {
     // Return a Promise that resolves when the email is sent or rejects if there's an error
     return new Promise((resolve, reject) => {

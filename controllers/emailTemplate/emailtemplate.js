@@ -263,7 +263,7 @@ exports.template = `<html xmlns="http://www.w3.org/1999/xhtml">
 					</p>
 					<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Place:CHENNAI.</p>
 					<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">
-					Date:23-03-2024.</p>
+					Date:{currentDate}</p>
 					
 				</div>
 			</div>
