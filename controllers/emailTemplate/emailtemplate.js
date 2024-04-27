@@ -276,9 +276,9 @@ exports.template = `<html xmlns="http://www.w3.org/1999/xhtml">
 
 				<div style="flex: 1; padding: 10px;">
 					<p style="margin-bottom: 5px;font-size: 1.9em; text-align:center">TOTAL AMOUNT:{totalAmount}</p>
-					<h3 style="margin-top: 3; margin-bottom: 10px; font-size: 1.5em;">
+					<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">
 					SGST @ 9%:{withsgst}
-					</h3>
+					</p>
 					<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">
 					CGST @9%:{withCGST}</p>
 					
