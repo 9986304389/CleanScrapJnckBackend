@@ -765,15 +765,15 @@ exports.placeordersendtoemail = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["userdetails", "orderdetails"];
-        const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
-        if (inputs !== true) {
-            return APIRes.getNotExistsResult(`Required ${inputs}`, res);
-        }
+        // const requiredFields = ["userdetails", "orderdetails"];
+        // const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
+        // if (inputs !== true) {
+        //     return APIRes.getNotExistsResult(`Required ${inputs}`, res);
+        // }
 
-        let { userdetails, orderdetails } = userInput;
+        let { userdetails, orderdetails, address, totalAmount } = userInput;
 
-        let email_send = await SendEmailToUser(userdetails, orderdetails);
+        let email_send = await SendEmailToUser(userdetails, orderdetails, address, totalAmount);
 
         if (email_send) {
             return APIRes.getFinalResponse(true, `Orders placed successfully.`, [], res);
@@ -796,7 +796,7 @@ exports.placeordersendtoemail = async (req, res, next) => {
 
 }
 
-const SendEmailToUser = async (userdetails, orderdetails, email) => {
+const SendEmailToUser = async (userdetails, orderdetails, address, totalAmount) => {
     // Create a transporter object using SMTP transport
     let transporter = nodemailer.createTransport({
         host: 'smtp.hostinger.com', // Your SMTP server hostname
@@ -811,11 +811,25 @@ const SendEmailToUser = async (userdetails, orderdetails, email) => {
     // console.log(template.template)
     // let htmlcontent=template.Body.toString('utf-8');
     // Define email content
-    const modifytemp = template.template.replace('{nameofreceiver}', "kavitha")
-        .replace('{addressofreceiver}', "chennai")
-        .replace('{cell}', "chennai")
-        .replace('{email}', "test@gmail.com")
+
+    let sgst = ((totalAmount * 9) / 100)
+    const modifytemp = template.template.replace('{nameofreceiver}', userdetails.name)
+        .replace('{addressofreceiver}', address)
+        .replace('{cell}', userdetails.phonenumber)
+        .replace('{email}', userdetails.name)
         .replace('{GSTIn}', "gst5689999999")
+        .replace('{items-table}', orderdetails.map((item, index) =>
+            `<tr>
+                <td style="padding: 20px 0 10px;">${index + 1}</td>
+                <td style="padding: 20px 0 10px;">${item?.description}</td>
+                <td style="padding: 20px 0 10px;">${item?.quantity}</td>
+                <td style="padding: 20px 0 10px;">${item?.quantity}</td>
+                <td style="padding: 20px 0 10px;">${item?.price}</td>
+                <td style="padding: 20px 0 10px;">${item?.total_amount}</td>
+                </tr>`).join('') ?? '')
+        .replace('{totalAmount}', totalAmount)
+        .replace('{withsgst}', sgst)
+        .replace('{withCGST}', sgst)
 
     let mailOptions = {
         from: 'help@cleanscrapjunk.com', // Sender address

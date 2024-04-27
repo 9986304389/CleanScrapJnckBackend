@@ -72,50 +72,53 @@ a, a:hover {
 <!-- Set conteiner background color -->
 <table border="0" cellpadding="0" cellspacing="0" align="center"
 	bgcolor="#FFFFFF"
-	width="700" style="border-collapse: collapse; border-spacing: 0; padding: 0; width: inherit; 
+	width="700"   style="border-collapse: collapse; border-spacing: 0; padding: 0; width: inherit; 
 	max-width: 700px;" class="container">
 
 	<!-- HEADER -->
 	<!-- Set text color and font family ("sans-serif" or "Georgia, serif") -->
-	<div style="display: flex; flex-direction: column; padding-top: 20px; margin: 10px;">
-  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
-    
-    <div style="flex: 1; padding: 20px;">
-      <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.5em;">Product Name</h3>
-      <p style="margin-top: 0; margin-bottom: 5px;">Size: Medium</p>
-      <p style="margin-top: 0; margin-bottom: 5px;">Quantity: 10</p>
-      <p style="margin-top: 0; margin-bottom: 5px;">Rate: $10.99</p>
-    </div>
-  </div>
-
-  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-   
-    <div style="flex: 1; padding: 20px;">
-      <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.5em;">Product Name</h3>
-      <p style="margin-top: 0; margin-bottom: 5px;">Size: Medium</p>
-      <p style="margin-top: 0; margin-bottom: 5px;">Quantity: 10</p>
-      <p style="margin-top: 0; margin-bottom: 5px;">Rate: $10.99</p>
-    </div>
-  </div>
-</div>
+<!-- HEADER -->
+	<!-- Set text color and font family ("sans-serif" or "Georgia, serif") -->
+	<div style="display: flex; flex-direction: column; padding-top: 20px;">
+		<div style="margin-bottom: 20px;">
+		  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+		  
+			<div style="flex: 1; padding: 10px;">
+			<p style="margin-bottom: 5px;font-size: 1.9em; text-align:center">SHIPPER</p>
+			  <h3 style="margin-top: 3; margin-bottom: 10px; font-size: 1.5em;">Me:Clean Scrap Junk</h3>
+			  <p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Address:Chennai</p>
+			  <p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Cell:7010669844/8939478022</p>
+			  <p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Email:cleanscrapjunk@gmail.com</p>
+			  <p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">GSTIN:33ADJPA3181C1Z7</p>
+			</div>
+		  </div>
+		</div>
+	  
+		<div style="margin-bottom: 20px;">
+		  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+		 
+		  
+		  <div style="flex: 1; padding: 10px;">
+		  <p style="margin-bottom: 5px;font-size: 1.9em; text-align:center">RECEIVER</p>
+			<h3 style="margin-top: 3; margin-bottom: 10px; font-size: 1.5em;">Name:{nameofreceiver}</h3>
+			<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Address:{addressofreceiver}</p>
+			<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Cell:{cell}</p>
+			<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Email:{email}</p>
+			<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">GSTIN:{GSTIn}</p>
+		  </div>
+		  </div>
+		</div>
+	  </div>
+	  
 
 	<!-- PARAGRAPH -->
 	<!-- Set text color and font family ("sans-serif" or "Georgia, serif"). Duplicate all text styles in links, including line-height -->
-	<tr>
-		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 8%; padding-right: 8%; width: 87.5%; font-size: 18px; font-weight: 400; line-height: 160%; text-align: left;
-			padding-top: 30px; 
-			color: #525c6c;
-			font-family: 'Arial', sans-serif;" class="paragraph">
-				Dear {{ agent }},
-			<br><br>
-				We wanted to remind you of some potential opportunities. Below is a list of open quotes you created last week. 
-		</td>
-	</tr>
+
 
 	<!-- LINE -->
 	<!-- Set line color -->
 	<tr>	
-		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 8%; padding-right: 8%; width: 87.5%;
+		<td  align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 8%; padding-right: 8%; width: 87.5%;
 			padding-top: 50px;" class="line">
 		</td>
 	</tr>	
@@ -128,10 +131,15 @@ a, a:hover {
 					color: #7d8d9e;
 					text-transform: uppercase;
 					font-family: 'Arial', sans-serif;;" class="paragraph">
-				<th scope="col" style="padding-bottom: 10px;">Account name</th>
-				<th scope="col" style="padding-bottom: 10px;">Date created</th>
-				<th scope="col" style="padding-bottom: 10px;" align="right">Premium</th>
+				<th scope="col" style="padding-bottom: 10px;">S.No</th>
+				<th scope="col" style="padding-bottom: 10px;">Discription</th>
+				<th scope="col" style="padding-bottom: 10px;">Pieces</th>
+				<th scope="col" style="padding-bottom: 10px;">Quantity</th>
+				<th scope="col" style="padding-bottom: 10px;">Rate PerKg</th>
+				<th scope="col" style="padding-bottom: 10px;">Amount</th>
 			</tr>
+
+			
 			
 			<!-- LIST ITEM -->
 			<tr align="left" valign="top" style="font-size: 18px; font-weight: 400; line-height: 160%; border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0;
