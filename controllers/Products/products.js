@@ -835,7 +835,7 @@ const SendEmailToUser = async (userdetails, orderdetails, address, totalAmount) 
 
     let mailOptions = {
         from: 'help@cleanscrapjunk.com', // Sender address
-        to:'kavitheec1431@gmail.com', // List of recipients
+        to:'kavithaec1431@gmail.com', // List of recipients
         subject: 'Quotation', // Subject line
         html: modifytemp
         // html: '<h1>This is a test email</h1><p>Sent from Node.js</p>'
