@@ -817,8 +817,8 @@ const SendEmailToUser = async (userdetails, orderdetails, address, totalAmount) 
     let sgst = ((totalAmount * 9) / 100)
     const modifytemp = template.template.replace('{nameofreceiver}', userdetails.name)
         .replace('{addressofreceiver}', `${address.address_line1} ${address.address_line2} ${address.city} ${address.state} ${address.postal_code}`)
-        .replace('{cell}', userdetails.phonenumber)
-        .replace('{email}', userdetails.name)
+        .replace('{cell}', userdetails.phoneNumber)
+        .replace('{email}', userdetails.email)
         .replace('{GSTIn}', " ")
         .replace('{items-table}', orderdetails.map((item, index) =>
             `<tr>
@@ -827,7 +827,7 @@ const SendEmailToUser = async (userdetails, orderdetails, address, totalAmount) 
                 <td style="padding: 20px 0 10px;">${item?.quantity}</td>
                 <td style="padding: 20px 0 10px;">${item?.quantity}</td>
                 <td style="padding: 20px 0 10px;">${item?.price}</td>
-                <td style="padding: 20px 0 10px;">${item?.total_amount}</td>
+                <td style="padding: 20px 0 10px;">${item?.price}</td>
                 </tr>`).join('') ?? '')
         .replace('{totalAmount}', totalAmount)
         .replace('{withsgst}', sgst)

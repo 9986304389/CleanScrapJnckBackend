@@ -170,7 +170,7 @@ exports.template = `<html xmlns="http://www.w3.org/1999/xhtml">
 									<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">
 										Address:{addressofreceiver}</p>
 									<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Cell:{cell}</p>
-									<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Email:{email} 666666666666</p>
+									<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">Email:{email}</p>
 									<p style="margin-top: 0; margin-bottom: 5px;font-size: 1.5em;">GSTIN:{GSTIn}</p>
 								</div>
 							</div>
