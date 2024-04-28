@@ -776,6 +776,18 @@ exports.placeordersendtoemail = async (req, res, next) => {
         let email_send = await SendEmailToUser(userdetails, orderdetails, address, totalAmount);
 
         if (email_send) {
+
+            const imageUrls = orderdetails.map(order => order.image_url);
+            const productCodes = orderdetails.map(order => order.product_code);
+            const names = orderdetails.map(order => order.name);
+            addresofcustomer = `${address?.address_line1 ?? ''} ${address?.address_line2 ?? ''} ${address?.city ?? ''} ${address?.state ?? ''} ${address?.postal_code ?? ''}`
+
+            const query = `INSERT INTO orders (customer_id, order_date, status, total_amount, created_at, updated_at, img_url, product_code, address,name)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)
+                            RETURNING order_id;`;
+            const values = [userdetails.phoneNumber, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), 'Completed', totalAmount, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), imageUrls, productCodes, addresofcustomer, names];
+            const result = await client.query(query, values);
+
             return APIRes.getFinalResponse(true, `Orders placed successfully.`, [], res);
 
         }
@@ -815,20 +827,20 @@ const SendEmailToUser = async (userdetails, orderdetails, address, totalAmount) 
     console.log(userdetails)
     console.log(address)
     let sgst = ((totalAmount * 9) / 100)
-    const modifytemp = template.template.replace('{nameofreceiver}', userdetails?.name??'')
-        .replace('{addressofreceiver}', `${address?.address_line1 ??''} ${address?.address_line2??''} ${address?.city??''} ${address?.state??''} ${address?.postal_code??''}`)
-        .replace('{cell}', userdetails?.phoneNumber??'')
-        .replace('{email}', userdetails?.email??'') 
+    const modifytemp = template.template.replace('{nameofreceiver}', userdetails?.name ?? '')
+        .replace('{addressofreceiver}', `${address?.address_line1 ?? ''} ${address?.address_line2 ?? ''} ${address?.city ?? ''} ${address?.state ?? ''} ${address?.postal_code ?? ''}`)
+        .replace('{cell}', userdetails?.phoneNumber ?? '')
+        .replace('{email}', userdetails?.email ?? '')
         .replace('{GSTIn}', " ")
-        .replace('{currentDate}',getCurrentDate())
+        .replace('{currentDate}', getCurrentDate())
         .replace('{items-table}', orderdetails.map((item, index) =>
             `<tr>
                 <td style="padding: 20px 0 10px;">${index + 1}</td>
-                <td style="padding: 20px 0 10px;">${item?.description??''}</td>
-                <td style="padding: 20px 0 10px;">${item?.quantity??''}</td>
-                <td style="padding: 20px 0 10px;">${item?.quantity??''}</td>
-                <td style="padding: 20px 0 10px;">${item?.price??''}</td>
-                <td style="padding: 20px 0 10px;">${item?.price??''}</td>
+                <td style="padding: 20px 0 10px;">${item?.description ?? ''}</td>
+                <td style="padding: 20px 0 10px;">${item?.quantity ?? ''}</td>
+                <td style="padding: 20px 0 10px;">${item?.quantity ?? ''}</td>
+                <td style="padding: 20px 0 10px;">${item?.price ?? ''}</td>
+                <td style="padding: 20px 0 10px;">${item?.price ?? ''}</td>
                 </tr>`).join('') ?? '')
         .replace('{totalAmount}', totalAmount)
         .replace('{withsgst}', sgst)
@@ -836,7 +848,7 @@ const SendEmailToUser = async (userdetails, orderdetails, address, totalAmount) 
 
     let mailOptions = {
         from: 'help@cleanscrapjunk.com', // Sender address
-        to:'kavithaec1431@gmail.com', // List of recipients
+        to: 'kavithaec1431@gmail.com', // List of recipients
         subject: 'Quotation', // Subject line
         html: modifytemp
         // html: '<h1>This is a test email</h1><p>Sent from Node.js</p>'
@@ -855,20 +867,20 @@ const SendEmailToUser = async (userdetails, orderdetails, address, totalAmount) 
 
 const getCurrentDate = () => {
     const currentDate = new Date();
-  
+
     // Get day, month, and year from the current date
     const day = String(currentDate.getDate()).padStart(2, '0');
     const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // January is 0, so we add 1
     const year = currentDate.getFullYear();
-  
+
     // Format the date as dd.mm.yyyy
     const formattedDate = `${day}.${month}.${year}`;
-  
-    return formattedDate;
-  };
-  
 
-  
+    return formattedDate;
+};
+
+
+
 const email_send = async (transporter, mailOptions) => {
     // Return a Promise that resolves when the email is sent or rejects if there's an error
     return new Promise((resolve, reject) => {
