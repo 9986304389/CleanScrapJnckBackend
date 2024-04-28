@@ -763,6 +763,7 @@ exports.placeordersendtoemail = async (req, res, next) => {
         if (!errors.isEmpty()) {
             throw errors.array();
         }
+        client = await getClient();
 
         const userInput = Utils.getReqValues(req);
         // const requiredFields = ["userdetails", "orderdetails"];
@@ -781,6 +782,7 @@ exports.placeordersendtoemail = async (req, res, next) => {
             // const productCodes = orderdetails.map(order => order.product_code);
             // const names = orderdetails.map(order => order.name);
             for (const item of orderdetails) {
+               
                 const addresofcustomer = `${address?.address_line1 ?? ''} ${address?.address_line2 ?? ''} ${address?.city ?? ''} ${address?.state ?? ''} ${address?.postal_code ?? ''}`;
             
                 const query = `INSERT INTO orders (customer_id, order_date, status, total_amount, created_at, updated_at, img_url, product_code, address,name)
@@ -788,7 +790,7 @@ exports.placeordersendtoemail = async (req, res, next) => {
                                 RETURNING order_id;`;
             
                 const values = [
-                    userdetails.phoneNumber,
+                    item.customer_id,
                     moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'),
                     'Completed',
                     totalAmount,
@@ -800,13 +802,10 @@ exports.placeordersendtoemail = async (req, res, next) => {
                     item.name
                 ];
             
-                try {
-                    const result = await client.query(query, values);
+               console.log(query)
+                const result = await client.query(query, values);
                     // Handle result if needed
-                } catch (error) {
-                    console.error('Error inserting order:', error);
-                    // Handle error if needed
-                }
+              
             }
             
             return APIRes.getFinalResponse(true, `Orders placed successfully.`, [], res);
