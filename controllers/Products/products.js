@@ -777,18 +777,40 @@ exports.placeordersendtoemail = async (req, res, next) => {
 
         if (email_send) {
 
-            const imageUrls = orderdetails.map(order => order.image_url);
-            const productCodes = orderdetails.map(order => order.product_code);
-            const names = orderdetails.map(order => order.name);
-            addresofcustomer = `${address?.address_line1 ?? ''} ${address?.address_line2 ?? ''} ${address?.city ?? ''} ${address?.state ?? ''} ${address?.postal_code ?? ''}`
-
-            const query = `INSERT INTO orders (customer_id, order_date, status, total_amount, created_at, updated_at, img_url, product_code, address,name)
-                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)
-                            RETURNING order_id;`;
-            const values = [userdetails.phoneNumber, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), 'Completed', totalAmount, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), imageUrls, productCodes, addresofcustomer, names];
-            const result = await client.query(query, values);
-
+            // const imageUrls = orderdetails.map(order => order.image_url);
+            // const productCodes = orderdetails.map(order => order.product_code);
+            // const names = orderdetails.map(order => order.name);
+            for (const item of orderdetails) {
+                const addresofcustomer = `${address?.address_line1 ?? ''} ${address?.address_line2 ?? ''} ${address?.city ?? ''} ${address?.state ?? ''} ${address?.postal_code ?? ''}`;
+            
+                const query = `INSERT INTO orders (customer_id, order_date, status, total_amount, created_at, updated_at, img_url, product_code, address,name)
+                                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)
+                                RETURNING order_id;`;
+            
+                const values = [
+                    userdetails.phoneNumber,
+                    moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'),
+                    'Completed',
+                    totalAmount,
+                    moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'),
+                    moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'),
+                    item.image_url,
+                    item.product_code,
+                    addresofcustomer,
+                    item.name
+                ];
+            
+                try {
+                    const result = await client.query(query, values);
+                    // Handle result if needed
+                } catch (error) {
+                    console.error('Error inserting order:', error);
+                    // Handle error if needed
+                }
+            }
+            
             return APIRes.getFinalResponse(true, `Orders placed successfully.`, [], res);
+            
 
         }
         else {
