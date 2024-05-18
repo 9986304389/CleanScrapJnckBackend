@@ -25,7 +25,7 @@ exports.Addproducts = async (req, res, next) => {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
         }
 
-        let { product_code, name, description, price, quantity_available, category_id, image_url, type, typeofproduct } = userInput;
+        let { product_code, name, description, price, quantity_available, category_id, image_url, type, typeofproduct, sub_products } = userInput;
 
         //image_url = `${process.env.DOMAIN + image_url}`;
 
@@ -37,21 +37,42 @@ exports.Addproducts = async (req, res, next) => {
         const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
 
         if (existingRecord.rows.length === 0) {
-            const query = `
-                            INSERT INTO products (product_code,name,description, price, quantity_available, category_id, image_url,created_at,type,typeofproduct)
-                            VALUES ($1, $2, $3, $4, $5, $6,$7,$8,$9,$10)
-                            RETURNING *;
-                            `;
-            const values = [product_code, name, description, price, quantity_available, category_id, image_url, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), type, typeofproduct];
-            const result = await client.query(query, values);
+            // Begin a transaction
+            await client.query('BEGIN');
 
-            if (result) {
-                return APIRes.getFinalResponse(true, `Product created successfully.`, [], res);
+            // Insert the product
+            const productInsertQuery = `
+                INSERT INTO products (product_code, name, description, price, quantity_available, category_id, image_url, created_at, type, typeofproduct)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                RETURNING *;
+            `;
+            const productInsertValues = [product_code, name, description, price, quantity_available, category_id, image_url, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), type, typeofproduct];
+            const productResult = await client.query(productInsertQuery, productInsertValues);
+            console.log(productResult)
+            const productId = productResult.rows[0].product_id;
+
+            // Insert the subproducts
+            for (const subProduct of sub_products) {
+                const subProductInsertQuery = `
+                    INSERT INTO subproducts (id, name, size, product_type)
+                    VALUES ($1, $2, $3, $4);
+                `;
+                const subProductInsertValues = [productId, subProduct.name, subProduct.size, subProduct.product_type];
+                await client.query(subProductInsertQuery, subProductInsertValues);
             }
+
+            // Commit the transaction
+            await client.query('COMMIT');
+
+            return APIRes.getFinalResponse(true, `Product created successfully.`, [], res);
         } else {
             return APIRes.getFinalResponse(false, `Product already exists`, [], res);
         }
     } catch (error) {
+        // Rollback the transaction if an error occurs
+        if (client) {
+            await client.query('ROLLBACK');
+        }
         console.error('Error:', error);
         return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
     } finally {
@@ -61,6 +82,7 @@ exports.Addproducts = async (req, res, next) => {
         }
     }
 };
+
 
 exports.Editproducts = async (req, res, next) => {
     let client;
@@ -114,30 +136,76 @@ exports.Editproducts = async (req, res, next) => {
     }
 };
 
+// exports.getallProducts = async (req, res, next) => {
+//     let client;
+//     try {
+//         const userInput = Utils.getReqValues(req);
+//         const { product_code, Active_Status, type } = userInput;
+//         client = await getClient();
+//         let query = `SELECT * FROM products WHERE 1=1`
+
+//         if (product_code) {
+//             query = query + ` and product_code = '${product_code}'`; // Ensure proper spacing and quoting for the condition
+//         }
+//         if (Active_Status) {
+//             query = query + ` and product_status = '${Active_Status}'`
+//         }
+//         if (type) {
+//             query = query + ` and type = '${type}'`
+//         }
+
+//         const existingRecord = await client.query(query);
+
+//         if (existingRecord.rows.length != 0) {
+//             return APIRes.getFinalResponse(true, `Successfully received product details.`, existingRecord.rows, res);
+//         } else {
+//             return APIRes.getFinalResponse(false, `No Product's`, [], res);
+//         }
+//     } catch (error) {
+//         console.error('Error:', error);
+//         return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+//     } finally {
+//         // Close the client connection
+//         if (client) {
+//             await client.end();
+//         }
+//     }
+// };
+
 exports.getallProducts = async (req, res, next) => {
     let client;
     try {
         const userInput = Utils.getReqValues(req);
         const { product_code, Active_Status, type } = userInput;
         client = await getClient();
-        let query = `SELECT * FROM products WHERE 1=1`
+
+        let query = `
+            SELECT p.*, json_agg(json_build_object('id', sp.id, 'name', sp.name, 'size', sp.size, 'product_type', sp.product_type)) AS sub_products
+            FROM products p
+            LEFT JOIN subproducts sp ON p.product_id = sp.id
+            WHERE 1=1
+        `;
 
         if (product_code) {
-            query = query + ` and product_code = '${product_code}'`; // Ensure proper spacing and quoting for the condition
+            query += ` AND p.product_code = '${product_code}'`; // Ensure proper spacing and quoting for the condition
         }
         if (Active_Status) {
-            query = query + ` and product_status = '${Active_Status}'`
+            query += ` AND p.product_status = '${Active_Status}'`;
         }
         if (type) {
-            query = query + ` and type = '${type}'`
+            query += ` AND p.type = '${type}'`;
         }
 
-        const existingRecord = await client.query(query);
+        query += `
+            GROUP BY p.product_id
+        `;
 
-        if (existingRecord.rows.length != 0) {
-            return APIRes.getFinalResponse(true, `Successfully received product details.`, existingRecord.rows, res);
+        const existingRecords = await client.query(query);
+
+        if (existingRecords.rows.length !== 0) {
+            return APIRes.getFinalResponse(true, `Successfully received product details.`, existingRecords.rows, res);
         } else {
-            return APIRes.getFinalResponse(false, `No Product's`, [], res);
+            return APIRes.getFinalResponse(false, `No Products`, [], res);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -149,6 +217,7 @@ exports.getallProducts = async (req, res, next) => {
         }
     }
 };
+
 
 //Add the cart products
 exports.addProductstoCartByUser = async (req, res, next) => {
@@ -527,7 +596,7 @@ exports.WeBuyProducts = async (req, res, next) => {
                 return APIRes.getNotExistsResult(`Required ${inputs}`, res);
             }
         }
-        let { product_id, name, description, price, quantity_available, category_id, created_at, updated_at, image_url, product_code, type, typeofproduct } = userInput;
+        let { product_id, name, description, price, quantity_available, category_id, created_at, updated_at, image_url, product_code, type, typeofproduct, sub_products } = userInput;
 
         client = await getClient();
 
@@ -583,6 +652,18 @@ exports.WeBuyProducts = async (req, res, next) => {
                 const insertValues = [name, description, price, quantity_available, category_id, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), image_url, product_code, type, typeofproduct];
                 const result = await client.query(insertQuery, insertValues);
 
+                const productId = result.rows[0].product_id;
+
+                // Insert the subproducts
+                for (const subProduct of sub_products) {
+                    const subProductInsertQuery = `
+                    INSERT INTO subproducts (id, name, size, product_type)
+                    VALUES ($1, $2, $3, $4);
+                `;
+                    const subProductInsertValues = [productId, subProduct.name, subProduct.size, subProduct.product_type];
+                    await client.query(subProductInsertQuery, subProductInsertValues);
+                }
+
                 if (result.rows.length > 0) {
                     return APIRes.getFinalResponse(true, `Product added successfully.`, result.rows, res);
                 }
@@ -599,29 +680,29 @@ exports.WeBuyProducts = async (req, res, next) => {
     }
 };
 
-exports.getAllWeBuyProducts = async (req, res, next) => {
-    let client;
-    try {
+// exports.getAllWeBuyProducts = async (req, res, next) => {
+//     let client;
+//     try {
 
-        client = await getClient();
-        const existingRecordQuery = 'SELECT * FROM webyproducts';
-        const existingRecord = await client.query(existingRecordQuery);
-        if (existingRecord.rows.length === 0) {
-            return APIRes.getFinalResponse(false, `No Products`, [], res);
-        } else {
+//         client = await getClient();
+//         const existingRecordQuery = 'SELECT * FROM webyproducts';
+//         const existingRecord = await client.query(existingRecordQuery);
+//         if (existingRecord.rows.length === 0) {
+//             return APIRes.getFinalResponse(false, `No Products`, [], res);
+//         } else {
 
-            return APIRes.getFinalResponse(true, `Successfully get products`, existingRecord.rows, res);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
-    } finally {
-        // Close the client connection
-        if (client) {
-            await client.end();
-        }
-    }
-};
+//             return APIRes.getFinalResponse(true, `Successfully get products`, existingRecord.rows, res);
+//         }
+//     } catch (error) {
+//         console.error('Error:', error);
+//         return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+//     } finally {
+//         // Close the client connection
+//         if (client) {
+//             await client.end();
+//         }
+//     }
+// };
 
 //Place order
 // exports.placeorder = async (req, res, next) => {
@@ -688,6 +769,48 @@ exports.getAllWeBuyProducts = async (req, res, next) => {
 //         }
 //     }
 // };
+
+exports.getAllWeBuyProducts = async (req, res, next) => {
+    let client;
+    try {
+        client = await getClient();
+
+        const userInput = Utils.getReqValues(req);
+        const { type } = userInput;
+
+        let query = `
+            SELECT wp.*, json_agg(json_build_object('id', sp.id, 'name', sp.name, 'size', sp.size, 'product_type', sp.product_type)) AS sub_products
+            FROM webyproducts wp
+            LEFT JOIN subproducts sp ON wp.product_id = sp.id
+            WHERE 1=1
+        `;
+
+        if (type) {
+            query += ` AND wp.type = '${type}'`;
+        }
+
+        query += `
+            GROUP BY wp.product_id
+        `;
+
+        const existingRecords = await client.query(query);
+
+        if (existingRecords.rows.length === 0) {
+            return APIRes.getFinalResponse(false, `No Products`, [], res);
+        } else {
+            return APIRes.getFinalResponse(true, `Successfully get products`, existingRecords.rows, res);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return APIRes.getFinalResponse(false, `Internal Server Error`, [], res);
+    } finally {
+        // Close the client connection
+        if (client) {
+            await client.end();
+        }
+    }
+};
+
 
 exports.placeorder = async (req, res, next) => {
     console.log("hey")
@@ -782,13 +905,13 @@ exports.placeordersendtoemail = async (req, res, next) => {
             // const productCodes = orderdetails.map(order => order.product_code);
             // const names = orderdetails.map(order => order.name);
             for (const item of orderdetails) {
-               
+
                 const addresofcustomer = `${address?.address_line1 ?? ''} ${address?.address_line2 ?? ''} ${address?.city ?? ''} ${address?.state ?? ''} ${address?.postal_code ?? ''}`;
-            
+
                 const query = `INSERT INTO orders (customer_id, order_date, status, total_amount, created_at, updated_at, img_url, product_code, address,name)
                                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)
                                 RETURNING order_id;`;
-            
+
                 const values = [
                     item.customer_id,
                     moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'),
@@ -801,15 +924,15 @@ exports.placeordersendtoemail = async (req, res, next) => {
                     addresofcustomer,
                     item.name
                 ];
-            
-               console.log(query)
+
+                console.log(query)
                 const result = await client.query(query, values);
-                    // Handle result if needed
-              
+                // Handle result if needed
+
             }
-            
+
             return APIRes.getFinalResponse(true, `Orders placed successfully.`, [], res);
-            
+
 
         }
         else {
