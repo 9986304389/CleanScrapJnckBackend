@@ -51,16 +51,17 @@ exports.Addproducts = async (req, res, next) => {
             console.log(productResult)
             const productId = productResult.rows[0].product_id;
 
-            // Insert the subproducts
-            for (const subProduct of sub_products) {
-                const subProductInsertQuery = `
+            if (sub_products) {
+                // Insert the subproducts
+                for (const subProduct of sub_products) {
+                    const subProductInsertQuery = `
                     INSERT INTO subproducts (id, name, size, product_type)
                     VALUES ($1, $2, $3, $4);
                 `;
-                const subProductInsertValues = [productId, subProduct.name, subProduct.size, subProduct.product_type];
-                await client.query(subProductInsertQuery, subProductInsertValues);
+                    const subProductInsertValues = [productId, subProduct.name, subProduct.size, subProduct.product_type];
+                    await client.query(subProductInsertQuery, subProductInsertValues);
+                }
             }
-
             // Commit the transaction
             await client.query('COMMIT');
 
@@ -654,14 +655,16 @@ exports.WeBuyProducts = async (req, res, next) => {
 
                 const productId = result.rows[0].product_id;
 
-                // Insert the subproducts
-                for (const subProduct of sub_products) {
-                    const subProductInsertQuery = `
+                if (sub_products) {
+                    // Insert the subproducts
+                    for (const subProduct of sub_products) {
+                        const subProductInsertQuery = `
                     INSERT INTO subproducts (id, name, size, product_type)
                     VALUES ($1, $2, $3, $4);
                 `;
-                    const subProductInsertValues = [productId, subProduct.name, subProduct.size, subProduct.product_type];
-                    await client.query(subProductInsertQuery, subProductInsertValues);
+                        const subProductInsertValues = [productId, subProduct.name, subProduct.size, subProduct.product_type];
+                        await client.query(subProductInsertQuery, subProductInsertValues);
+                    }
                 }
 
                 if (result.rows.length > 0) {
