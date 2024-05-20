@@ -19,7 +19,7 @@ exports.Addproducts = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["product_code", "name", "description", "price", "quantity_available", "category_id", "type", "typeofproduct"];
+        const requiredFields = ["product_code", "name", "price", "quantity_available", "category_id", "type", "typeofproduct"];
         const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
@@ -591,7 +591,7 @@ exports.WeBuyProducts = async (req, res, next) => {
 
         console.log(userInput.product_id)
         if (userInput.product_id == undefined) {
-            const requiredFields = ["name", "description", "price", "quantity_available", "image_url", "product_code", "type", "typeofproduct"];
+            const requiredFields = ["name", "price", "quantity_available", "image_url", "product_code", "type", "typeofproduct"];
             const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
             if (inputs !== true) {
                 return APIRes.getNotExistsResult(`Required ${inputs}`, res);
