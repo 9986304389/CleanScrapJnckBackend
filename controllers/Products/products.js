@@ -591,7 +591,7 @@ exports.WeBuyProducts = async (req, res, next) => {
 
         console.log(userInput.product_id)
         if (userInput.product_id == undefined) {
-            const requiredFields = ["name", "price", "quantity_available", "image_url", "product_code", "type", "typeofproduct"];
+            const requiredFields = ["name", "price", "image_url", "product_code", "type", "typeofproduct"];
             const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
             if (inputs !== true) {
                 return APIRes.getNotExistsResult(`Required ${inputs}`, res);
@@ -652,20 +652,6 @@ exports.WeBuyProducts = async (req, res, next) => {
                 `;
                 const insertValues = [name, description, price, quantity_available, category_id, moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'), image_url, product_code, type, typeofproduct];
                 const result = await client.query(insertQuery, insertValues);
-
-                const productId = result.rows[0].product_id;
-
-                if (sub_products) {
-                    // Insert the subproducts
-                    for (const subProduct of sub_products) {
-                        const subProductInsertQuery = `
-                    INSERT INTO subproducts (id, name, size, product_type)
-                    VALUES ($1, $2, $3, $4);
-                `;
-                        const subProductInsertValues = [productId, subProduct.name, subProduct.size, subProduct.product_type];
-                        await client.query(subProductInsertQuery, subProductInsertValues);
-                    }
-                }
 
                 if (result.rows.length > 0) {
                     return APIRes.getFinalResponse(true, `Product added successfully.`, result.rows, res);
@@ -782,18 +768,16 @@ exports.getAllWeBuyProducts = async (req, res, next) => {
         const { type } = userInput;
 
         let query = `
-            SELECT wp.*, json_agg(json_build_object('id', sp.id, 'name', sp.name, 'size', sp.size, 'product_type', sp.product_type)) AS sub_products
-            FROM webyproducts wp
-            LEFT JOIN subproducts sp ON wp.product_id = sp.id
+            select * from webyproducts
             WHERE 1=1
         `;
 
         if (type) {
-            query += ` AND wp.type = '${type}'`;
+            query += ` AND type = '${type}'`;
         }
 
         query += `
-            GROUP BY wp.product_id
+           order by 1 desc 
         `;
 
         const existingRecords = await client.query(query);
