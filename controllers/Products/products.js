@@ -345,7 +345,7 @@ exports.getProductsByUser = async (req, res, next) => {
         let { customer_id } = userInput;
 
         client = await getClient();
-        const existingRecordQuery = 'SELECT * FROM cart_items WHERE customer_id = $1';
+        const existingRecordQuery = 'SELECT * FROM cart_items WHERE customer_id = $1 order by 1 desc';
         const existingRecordValues = [customer_id];
         const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
         if (existingRecord.rows.length != 0) {
