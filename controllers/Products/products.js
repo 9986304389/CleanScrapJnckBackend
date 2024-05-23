@@ -243,10 +243,11 @@ exports.addProductstoCartByUser = async (req, res, next) => {
         client = await getClient();
 
         const existingRecordQuery = 'SELECT * FROM cart_items WHERE customer_id = $1 and product_code=$2';
+        
         const existingRecordValues = [customer_id, product_code];
-
+        
         const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
-
+        console.log(existingRecord)
         if (existingRecord.rows.length === 0) {
             const query = `
                             INSERT INTO cart_items ( customer_id, product_id, quantity, created_at, updated_at, image_url, price, product_code,name)
