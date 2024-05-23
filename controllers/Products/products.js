@@ -185,6 +185,7 @@ exports.getallProducts = async (req, res, next) => {
             FROM products p
             LEFT JOIN subproducts sp ON p.product_id = sp.id
             WHERE 1=1
+          
         `;
 
         if (product_code) {
@@ -199,6 +200,7 @@ exports.getallProducts = async (req, res, next) => {
 
         query += `
             GROUP BY p.product_id
+            order by 1 desc
         `;
 
         const existingRecords = await client.query(query);
@@ -243,9 +245,9 @@ exports.addProductstoCartByUser = async (req, res, next) => {
         client = await getClient();
 
         const existingRecordQuery = 'SELECT * FROM cart_items WHERE customer_id = $1 and product_code=$2';
-        
+
         const existingRecordValues = [customer_id, product_code];
-        
+
         const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
         console.log(existingRecord)
         if (existingRecord.rows.length === 0) {
@@ -559,7 +561,7 @@ exports.getAddressByUser = async (req, res, next) => {
         let { customer_id } = userInput;
 
         client = await getClient();
-        const existingRecordQuery = 'SELECT * FROM addresses WHERE customer_id = $1';
+        const existingRecordQuery = 'SELECT * FROM addresses WHERE customer_id = $1 order by 1 desc';
         const existingRecordValues = [customer_id];
         const existingRecord = await client.query(existingRecordQuery, existingRecordValues);
         if (existingRecord.rows.length === 0) {
@@ -1101,7 +1103,7 @@ exports.getOrdersByStatus = async (req, res, next) => {
         // Query to get orders by status
         const query = `
             SELECT * FROM orders
-            WHERE status = $1 and customer_id=$2;
+            WHERE status = $1 and customer_id=$2 order by 1 desc;
         `;
         const values = [status, customer_id];
         const result = await client.query(query, values);
@@ -1546,7 +1548,7 @@ exports.getalloffers = async (req, res, next) => {
         const userInput = Utils.getReqValues(req);
         const { product_code, Active_Status, type } = userInput;
         client = await getClient();
-        let query = `SELECT * FROM offers WHERE 1=1`
+        let query = `SELECT * FROM offers WHERE 1=1 order by 1 desc`
 
 
         const existingRecord = await client.query(query);
