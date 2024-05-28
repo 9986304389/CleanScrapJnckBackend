@@ -903,7 +903,7 @@ exports.placeordersendtoemail = async (req, res, next) => {
                                 RETURNING order_id;`;
 
                 const values = [
-                    item.customer_id,
+                    userdetails.phoneNumber,
                     moment().tz('Asia/Calcutta').format('YYYY-MM-DD HH:mm:ss.SSS'),
                     'Completed',
                     totalAmount,
