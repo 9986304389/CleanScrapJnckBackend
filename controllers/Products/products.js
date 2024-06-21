@@ -980,6 +980,7 @@ const SendEmailToUser = async (userdetails, orderdetails, address, totalAmount) 
         .replace('{withsgst}', sgst)
         .replace('{withCGST}', sgst)
 
+        //change the email id
     let mailOptions = {
         from: 'help@cleanscrapjunk.com', // Sender address
         to: 'cleanscrapjunk@gmail.com', // List of recipients
