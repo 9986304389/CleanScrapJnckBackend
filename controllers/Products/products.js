@@ -232,7 +232,7 @@ exports.addProductstoCartByUser = async (req, res, next) => {
         }
 
         const userInput = Utils.getReqValues(req);
-        const requiredFields = ["customer_id", "product_id", "quantity", "image_url", "price", "product_code", "name"];
+        const requiredFields = ["customer_id", "product_id", "quantity", "price", "product_code", "name"];
         const inputs = validateUserInput.validateUserInput(userInput, requiredFields);
         if (inputs !== true) {
             return APIRes.getNotExistsResult(`Required ${inputs}`, res);
