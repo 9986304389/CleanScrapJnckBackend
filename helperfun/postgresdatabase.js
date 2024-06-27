@@ -5,9 +5,9 @@ dotenv.config();
 module.exports.getClient = async () => {
     const client = new Client({
         user: 'postgres',
-        host: 'cleanscrap.cna4aw4omfk9.ap-south-1.rds.amazonaws.com',
+        host: 'restore-cleanscrap.cna4aw4omfk9.ap-south-1.rds.amazonaws.com',
         database: 'postgres',
-        password: 'GwRUBJ571Rb0vZYhOpdy',
+        password: 'Cleanscrap123!',
         port: 5432, // Default PostgreSQL port
         
         ssl: {
